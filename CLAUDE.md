@@ -197,6 +197,19 @@ python3 scripts/build_index.py
 
 没有链接、只有自己冒出的想法时：跳过抓取和 raw，直接在 `notes/` 建 `<YYYY-MM-DD>-idea-<slug>.md` ，frontmatter 同上（不写 url），正文把这个想法说透——写下来的字本身就是知识。然后跑上面两个脚本。
 
+## Ingest：用户丢本地文件
+
+用户给本机文件或目录路径时（md / txt / pdf / docx / html / 代码文件）：
+
+1. **读取**：
+   - md / txt / 代码文件：直接读
+   - pdf：用 Read 工具直接读
+   - docx：`textutil -convert txt -stdout <file>`（macOS 自带，已验证可用）；转不出来再告知用户
+   - html：**不要**用 textutil 转（中文乱码）；由 Claude 直接读源文件后剥掉标签、CSS、JS，只留正文
+2. **存副本**：原文件**复制**进 `raw/`（不剪切、不动原文件），命名 `<YYYY-MM-DD>-<原文件名>` ；docx / html 在 raw 里同时保留转出的纯文本 `.md` 版供后续引用。副本留底后原文件删了库里也有。
+3. 后续步骤同链接 ingest：写带立场笔记、打标签、跑两个脚本。
+4. **批量**：≤5 个文件直接全入；>5 个先列出文件清单给用户勾选，确认后再入。逐个文件独立处理，某个失败不影响其余的。
+
 ## category 取值
 
 `ai-practice`（AI 实操/工具）/ `product-thinking`（产品/业务） / `tech`（技术/工程） / `writing`（写作/表达） / `reading`（书/长文） / `misc`
