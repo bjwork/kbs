@@ -260,6 +260,7 @@ const EditorPane = {
       <div class="editor-row">
         <span class="lbl">标签</span>
         <span v-for="[t] in store.tagFreq" :key="t" class="chip" :class="{on: store.editing.tags.includes(t)}" @click="toggleTag(t)">{{ t }}</span>
+        <input class="tag-input" v-model="newTag" placeholder="＋新标签，回车添加" @keydown.enter.prevent="addTag">
       </div>
     </div>
     <div class="editor-main">
@@ -274,10 +275,17 @@ const EditorPane = {
   computed: {
     preview() { return md(store.editing.body); },
   },
+  data: () => ({ store, newTag: '' }),
   methods: {
     toggleTag(t) {
       const i = store.editing.tags.indexOf(t);
       i >= 0 ? store.editing.tags.splice(i, 1) : store.editing.tags.push(t);
+    },
+    addTag() {
+      const t = this.newTag.trim();
+      if (!t) return;
+      if (!store.editing.tags.includes(t)) store.editing.tags.push(t);
+      this.newTag = '';
     },
     saveNote,
   },

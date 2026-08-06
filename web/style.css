@@ -144,6 +144,8 @@ input, select, textarea { font: inherit; color: inherit; }
 .editor-row select { padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); font-size: 13px; }
 .editor-row .url-input { flex: 1; min-width: 200px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); font-size: 13px; outline: none; }
 .editor-row .url-input:focus { border-color: var(--accent); }
+.tag-input { width: 150px; padding: 3px 10px; border: 1px dashed var(--faint); border-radius: 20px; background: transparent; font-size: 12px; outline: none; }
+.tag-input:focus { border-color: var(--accent); }
 .editor-row .lbl { font-size: 12px; color: var(--dim); }
 .editor-main { flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: 0; }
 .editor-main textarea {

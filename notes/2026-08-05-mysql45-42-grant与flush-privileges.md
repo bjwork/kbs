@@ -4,6 +4,7 @@ date: 2026-08-05
 category: tech
 tags: [security, reading]
 status: raw
+related_raw: 2026-08-05-mysql45-42-grant之后要跟着flush-privileges吗.pdf
 ---
 
 丁奇第 42 讲。**规范使用 grant/revoke 不需要 flush privileges**——grant 同时改磁盘（mysql.user 等系统表）和内存（权限缓存），判断权限看内存。flush privileges 的作用是用磁盘数据**重建**内存权限，只在「内存和磁盘不一致」时才需要——而不一致的根源是有人**直接用 DML 语句（insert/update user 表）改权限**，跳过了内存更新。结论：别用 DML 改系统表，grant 就够了，flush 是补救措施不是常规操作。
