@@ -154,12 +154,17 @@ def get_note(name: str):
 def list_tags():
     conn = db()
     rows = conn.execute("SELECT tags FROM notes").fetchall()
+    cat_rows = conn.execute("SELECT category, COUNT(*) FROM notes GROUP BY category").fetchall()
     conn.close()
     freq = {}
     for r in rows:
         for t in _parse_list(r[0]):
             freq[t] = freq.get(t, 0) + 1
-    return {"tags": sorted(freq.items(), key=lambda x: -x[1]), "categories": CATEGORIES}
+    return {
+        "tags": sorted(freq.items(), key=lambda x: -x[1]),
+        "categories": CATEGORIES,
+        "cat_count": {r[0]: r[1] for r in cat_rows},
+    }
 
 
 # ---------- 录入 ----------
