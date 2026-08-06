@@ -61,7 +61,7 @@ def reindex() -> dict:
     conn.execute(FTS_SCHEMA)
 
     files = {p.name: p for p in NOTES_DIR.glob("*.md")}
-    db_rows = {r[0] for (r,) in conn.execute("SELECT name FROM notes")}
+    db_rows = {r[0] for r in conn.execute("SELECT name FROM notes")}
     # 文件内容没变但 rel_score 重写过 frontmatter（related 变化）时 mtime 也会变，
     # 为了索引与文件强一致这里直接全量 upsert（几百到几千篇都是秒级，不值得维护增量状态）
     removed = 0
