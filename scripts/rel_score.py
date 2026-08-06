@@ -75,8 +75,44 @@ def _kw_overlap(title_a: str, title_b: str) -> int:
 
 
 # 反规范化标签：出现频率过高、失去区分度的标签不计分。
-# 当前阈值按全库 ~48 篇设为 20，库规模变化后要重校。
+# 绝对阈值，随库规模手动调整：48 篇时 20（挡掉了 reading×45 这类大标签）；
+# 库涨到几千篇时需要重校（比如 2000 篇调到 ~200）。
 TAG_DF_THRESHOLD = 20
+
+
+def _title_fragments(title: str, min_len: int = 3) -> set:
+    """标题分片，用于倒排预筛：英文/数字词 + 中文段的全部 ≥min_len 滑窗子串。"""
+    frags = set()
+    for word in re.findall(r"[a-z0-9]+", title.lower()):
+        if word not in STOPWORDS and len(word) > 2:
+            frags.add(word)
+    for seg in re.findall(r"[一-鿿]+", title):
+        for i in range(len(seg) - min_len + 1):
+            frags.add(seg[i:i + min_len])
+    return frags
+
+
+def build_inverted(notes: list) -> dict:
+    """倒排索引：fragment(标签加 'tag:' 前缀) -> 笔记文件名集合。供增量预筛。"""
+    inv = {}
+    for n in notes:
+        keys = {f"tag:{t}" for t in (n["fm"].get("tags") or [])}
+        keys |= _title_fragments(n["fm"]["title"])
+        for k in keys:
+            inv.setdefault(k, set()).add(n["file"])
+    return inv
+
+
+def candidates(target: dict, inv: dict) -> set:
+    """预筛候选：与 target 共享任一标签或任一标题分片的笔记。
+    共享标签或标题子串才可能过 4 分阈值，其余直接跳过（零分对不再逐一打分）。"""
+    keys = {f"tag:{t}" for t in (target["fm"].get("tags") or [])}
+    keys |= _title_fragments(target["fm"]["title"])
+    out = set()
+    for k in keys:
+        out |= inv.get(k, set())
+    out.discard(target["file"])
+    return out
 # 系列笔记识别：匹配「日期-系列名编号-标题」里的「系列名编号」段。
 # 兼容「mysql45-01」「series01」「java-36」等写法，取到第一个全数字段为止。
 SERIES_PREFIX_RE = re.compile(r"^(\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z]+)*-\d+)")
@@ -155,18 +191,23 @@ def main():
 
     # edges: file -> set(related files)
     edges = {n["file"]: set(n["fm"].get("related") or []) for n in notes}
+    inv = build_inverted(notes)
+    by_file = {n["file"]: n for n in notes}
     for t in targets:
-        edges[t["file"]] = set()
-        for o in notes:
+        # 先摘掉自己：旧 edges 里指向 t 的引用全部清掉，再以新结果为准回写
+        for rel_set in edges.values():
+            rel_set.discard(t["file"])
+        pool = notes if args.all else [by_file[f] for f in candidates(t, inv) if f in by_file]
+        new_related = set()
+        for o in pool:
             if o["file"] == t["file"]:
                 continue
             s = score(t, o, tag_df)
             if s >= THRESHOLD:
-                edges[t["file"]].add(o["file"])
+                new_related.add(o["file"])
                 edges[o["file"]].add(t["file"])
                 print(f"关联 {s} 分：{t['file']}  <->  {o['file']}")
-
-    by_file = {n["file"]: n for n in notes}
+        edges[t["file"]] = new_related
     for fname, related in edges.items():
         write_related(by_file[fname]["path"], sorted(related), args.dry_run)
     print("完成" + ("（dry-run，未写文件）" if args.dry_run else ""))
