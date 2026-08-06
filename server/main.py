@@ -131,6 +131,13 @@ def list_notes(
     return {"total": total, "page": page, "size": size, "items": [_note_dict(r) for r in rows]}
 
 
+def _as_list(v) -> list:
+    """related_raw 向后兼容：老数据是单值字符串，包成单元素列表。"""
+    if not v:
+        return []
+    return v if isinstance(v, list) else [v]
+
+
 @app.get("/api/notes/{name}")
 def get_note(name: str):
     name = _safe_name(name)
@@ -148,7 +155,7 @@ def get_note(name: str):
         "related": fm.get("related") or [],
         "status": fm.get("status", ""),
         "url": fm.get("url", ""),
-        "raw_file": fm.get("related_raw", ""),
+        "raw_files": _as_list(fm.get("related_raw")),
         "body": note_body(text),
     }
 
@@ -177,9 +184,9 @@ class NoteIn(BaseModel):
     category: str = "misc"
     tags: list[str] = []
     body: str = ""
-    name: str = ""      # 编辑时传原文件名；新建时留空由服务端生成
-    raw_file: str = ""  # 关联的 raw/ 文件名（上传场景）
-    url: str = ""       # 原文链接（ingest 链接场景）
+    name: str = ""            # 编辑时传原文件名；新建时留空由服务端生成
+    raw_files: list[str] = []  # 关联的 raw/ 文件名列表（上传场景）
+    url: str = ""              # 原文链接（ingest 链接场景）
 
 
 def _slugify(title: str) -> str:
@@ -190,11 +197,13 @@ def _slugify(title: str) -> str:
 
 def _write_note(name: str, note: NoteIn) -> None:
     tags = ", ".join(note.tags)
-    raw_line = f"related_raw: {note.raw_file}\n" if note.raw_file else ""
     url_line = f"url: {note.url}\n" if note.url else ""
+    raw_block = ""
+    if note.raw_files:
+        raw_block = "related_raw:\n" + "".join(f"  - {r}\n" for r in note.raw_files)
     text = (
         f"---\ntitle: {note.title}\ndate: {date.today().isoformat()}\n"
-        f"category: {note.category}\ntags: [{tags}]\nstatus: raw\n{url_line}{raw_line}---\n\n"
+        f"category: {note.category}\ntags: [{tags}]\nstatus: raw\n{url_line}{raw_block}---\n\n"
         f"{note.body.strip()}\n"
     )
     (NOTES_DIR / name).write_text(text, encoding="utf-8")
@@ -275,8 +284,8 @@ def _convert(src: Path, suffix: str) -> str:
     return src.read_text(encoding="utf-8", errors="ignore")
 
 
-@app.post("/api/upload")
-async def upload(file: UploadFile):
+def _save_one_upload(file: UploadFile, data: bytes) -> dict:
+    """存一个上传文件到 raw/ 并转纯文本。返回 {raw_file, text}。"""
     safe_base = _safe_name(Path(file.filename).name)
     suffix = Path(safe_base).suffix.lower()
     if suffix not in CONVERTERS:
@@ -286,7 +295,7 @@ async def upload(file: UploadFile):
     raw_path = RAW_DIR / raw_name
     if raw_path.exists():
         raise HTTPException(409, f"raw/ 已存在同名文件：{raw_name}")
-    raw_path.write_bytes(await file.read())
+    raw_path.write_bytes(data)
     # 二进制原件同时留纯文本 .md 版（CLAUDE.md 规则）；文本类源文件不必再存一份
     if suffix in (".pdf", ".docx", ".html", ".htm"):
         text = _convert(raw_path, suffix)
@@ -294,6 +303,19 @@ async def upload(file: UploadFile):
     else:
         text = raw_path.read_text(encoding="utf-8", errors="ignore")
     return {"raw_file": raw_name, "text": text}
+
+
+@app.post("/api/upload")
+async def upload(files: list[UploadFile]):
+    """多文件上传：逐个存 raw/ 并转换，返回列表。某个失败不影响其余的。"""
+    results = []
+    for f in files:
+        data = await f.read()
+        try:
+            results.append(_save_one_upload(f, data))
+        except HTTPException as e:
+            results.append({"raw_file": f.filename, "text": "", "error": e.detail})
+    return {"files": results}
 
 
 # ---------- 原文下载 ----------

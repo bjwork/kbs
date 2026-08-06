@@ -29,7 +29,7 @@ const store = reactive({
   list: { items: [], total: 0, page: 1, size: 50 },
   current: null,        // 当前详情
   view: 'reader',       // reader | editor
-  editing: { name: '', title: '', category: 'misc', tags: [], body: '', raw_file: '', url: '' },
+  editing: { name: '', title: '', category: 'misc', tags: [], body: '', raw_files: [], url: '' },
   catCount: {},         // 分类 -> 篇数
   navOpen: false,       // 移动端抽屉
   toasts: [],
@@ -95,20 +95,29 @@ function startEdit(note) {
   const n = note || {};
   store.editing = {
     name: n.name || '', title: n.title || '', category: n.category || 'misc',
-    tags: [...(n.tags || [])], body: n.body || '', raw_file: n.raw_file || '',
+    tags: [...(n.tags || [])], body: n.body || '', raw_files: [...(n.raw_files || [])],
     url: n.url || '',
   };
   store.view = 'editor';
 }
 
-async function uploadFile(file) {
-  if (!file) return;
-  const fd = new FormData(); fd.append('file', file);
+async function uploadFiles(fileList) {
+  if (!fileList || !fileList.length) return;
+  const fd = new FormData();
+  for (const f of fileList) fd.append('files', f);
   toast('转换中…');
   try {
     const r = await api('/api/upload', { method: 'POST', body: fd });
-    startEdit({ title: file.name.replace(/\.[^.]+$/, ''), body: r.text, raw_file: r.raw_file });
-    toast('已存 raw/' + r.raw_file + '，请补摘要和立场');
+    const ok = r.files.filter(f => !f.error);
+    const fail = r.files.filter(f => f.error);
+    if (!ok.length) { toast('全部失败：' + (fail[0]?.error || '未知')); return; }
+    // 多个文件正文拼一起，raw_files 全挂上
+    const body = ok.map(f => f.text).join('\n\n---\n\n');
+    const raw_files = ok.map(f => f.raw_file);
+    const title = ok[0].raw_file.replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.[^.]+$/, '');
+    startEdit({ title, body, raw_files });
+    if (fail.length) toast(`${ok.length} 个成功，${fail.length} 个失败`);
+    else toast(`已存 ${ok.length} 个文件到 raw/，请补摘要和立场`);
   } catch (err) { toast('上传失败：' + err.message); }
 }
 
@@ -123,7 +132,7 @@ const NavPane = {
       <button class="btn primary block" @click="startEdit()">＋ 记笔记</button>
       <button class="btn block" @click="startEdit({url: '', _urlPrompt: true}); promptUrl()">🔗 丢链接</button>
       <button class="btn block" @click="$refs.file.click()">上传</button>
-      <input type="file" ref="file" hidden @change="uploadFile($event.target.files[0]); $event.target.value=''">
+      <input type="file" ref="file" hidden multiple @change="uploadFiles($event.target.files); $event.target.value=''">
     </div>
     <div class="nav-sec">
       <h4>分类</h4>
@@ -151,7 +160,7 @@ const NavPane = {
   methods: {
     pick(c) { store.filters.category = store.filters.category === c ? '' : c; store.navOpen = false; loadList(1); },
     pickTag(t) { store.filters.tag = store.filters.tag === t ? '' : t; store.navOpen = false; loadList(1); },
-    startEdit, uploadFile,
+    startEdit, uploadFiles,
     promptUrl() {
       const url = prompt('粘贴原文链接（正文先贴到笔记里，抓取管线二期再做）：');
       if (url) store.editing.url = url.trim();
@@ -222,8 +231,8 @@ const ReaderPane = {
         <span class="dot" v-if="store.current.url">
           <a class="src-link" :href="store.current.url" target="_blank" rel="noopener">🔗 原文链接</a>
         </span>
-        <span class="dot" v-if="store.current.raw_file">
-          <a class="src-link" :href="'/api/raw/' + encodeURIComponent(store.current.raw_file)">📎 原始文件</a>
+        <span class="dot" v-for="rf in store.current.raw_files" :key="rf">
+          <a class="src-link" :href="'/api/raw/' + encodeURIComponent(rf)" :title="rf">📎 {{ shortName(rf) }}</a>
         </span>
       </div>
       <div class="reader-body">
@@ -240,7 +249,13 @@ const ReaderPane = {
   computed: {
     html() { return md(store.current?.body); },
   },
-  methods: { startEdit, delNote, openNote },
+  methods: {
+    startEdit, delNote, openNote,
+    shortName(f) {
+      const base = f.replace(/^\d{4}-\d{2}-\d{2}-/, '');
+      return base.length > 22 ? base.slice(0, 22) + '…' : base;
+    },
+  },
   data: () => ({ store }),
 };
 
