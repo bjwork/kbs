@@ -218,6 +218,7 @@ const ReaderPane = {
     </div>
     <template v-else>
       <div class="reader-head">
+        <button class="btn ghost back-btn" @click="store.current = null">← 列表</button>
         <h1>{{ store.current.title }}</h1>
         <div class="reader-ops">
           <button class="btn" @click="startEdit(store.current)">编辑</button>

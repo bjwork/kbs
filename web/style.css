@@ -160,28 +160,43 @@ input, select, textarea { font: inherit; color: inherit; }
 .toast { background: #2c2a26; color: #f5f2ec; padding: 10px 22px; border-radius: 24px; font-size: 13.5px; box-shadow: var(--shadow); animation: up .25s ease; }
 @keyframes up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
 
-/* ===== 移动端分屏（<1024px） ===== */
+/* ===== 移动端竖屏（<1024px）：分屏切换 ===== */
 .nav-toggle { display: none; }
+.back-btn { display: none; }
 @media (max-width: 1023px) {
   .layout { grid-template-columns: 1fr; }
+  /* 左栏收成抽屉 */
   .nav {
-    position: fixed; inset: 0 auto 0 0; width: 260px; z-index: 40;
+    position: fixed; inset: 0 auto 0 0; width: min(78vw, 300px); z-index: 40;
     transform: translateX(-100%); transition: transform .25s; box-shadow: var(--shadow);
   }
   .nav.open { transform: none; }
   .nav-mask { position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 39; }
+  /* 中栏列表占满全屏 */
   .list { border-right: none; }
   .nav-toggle {
     display: inline-flex; position: absolute; left: 10px; top: 14px; z-index: 6;
     width: 34px; height: 34px; align-items: center; justify-content: center;
-    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; font-size: 16px;
   }
   .list-head { padding-left: 52px; }
-  .reader { position: fixed; inset: 0; z-index: 30; }
-  .reader-head { padding: 16px 20px 0; }
-  .reader-head h1 { font-size: 18px; }
-  .reader-meta, .reader-body { padding-left: 20px; padding-right: 20px; }
-  .editor { position: fixed; inset: 0; z-index: 30; }
+  /* 详情/编辑器全屏覆盖 */
+  .reader, .editor { position: fixed; inset: 0; z-index: 30; }
+  .reader-head { padding: 14px 16px 0; flex-wrap: wrap; }
+  .back-btn { display: inline-flex; }
+  .reader-head h1 { font-size: 18px; flex-basis: 100%; order: 2; margin-top: 6px; }
+  .reader-ops { order: 1; margin-left: auto; }
+  .reader-ops .btn { padding: 6px 10px; font-size: 12px; }
+  .reader-meta { padding: 8px 16px 0; font-size: 12px; }
+  .reader-body { padding: 12px 16px 80px; }
+  .md { font-size: 15.5px; }
+  .rel-grid { grid-template-columns: 1fr; }
+  /* 编辑器单列、隐藏预览 */
+  .editor-head { padding: 12px 16px; }
   .editor-main { grid-template-columns: 1fr; }
   .editor-main .preview { display: none; }
+  .editor-main textarea { padding: 14px 16px; }
+  .editor-foot { padding: 10px 16px; }
+  /* 空态移动端不展示（详情未选时列表已在显示） */
+  .reader-empty { display: none; }
 }
