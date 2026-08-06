@@ -74,10 +74,30 @@ def _kw_overlap(title_a: str, title_b: str) -> int:
     return hits
 
 
-def score(new: dict, old: dict) -> int:
+# 反规范化标签：出现频率过高、失去区分度的标签不计分。
+# 当前阈值按全库 ~48 篇设为 20，库规模变化后要重校。
+TAG_DF_THRESHOLD = 20
+# 系列笔记识别：匹配「日期-系列名编号-标题」里的「系列名编号」段。
+# 兼容「mysql45-01」「series01」「java-36」等写法，取到第一个全数字段为止。
+SERIES_PREFIX_RE = re.compile(r"^(\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z]+)*-\d+)")
+
+
+def _series_prefix(filename: str):
+    m = SERIES_PREFIX_RE.match(filename)
+    return m.group(1) if m else None
+
+
+def score(new: dict, old: dict, tag_df: dict = None) -> int:
     new_tags = set(new["fm"].get("tags") or [])
     old_tags = set(old["fm"].get("tags") or [])
-    tag_hits = len(new_tags & old_tags)
+    if tag_df:
+        new_tags = {t for t in new_tags if tag_df.get(t, 0) < TAG_DF_THRESHOLD}
+        old_tags = {t for t in old_tags if tag_df.get(t, 0) < TAG_DF_THRESHOLD}
+    # 同系列笔记的标签重叠不计分（避免全套教程互相全关联）
+    if _series_prefix(new["file"]) == _series_prefix(old["file"]) and _series_prefix(new["file"]):
+        tag_hits = 0
+    else:
+        tag_hits = len(new_tags & old_tags)
     kw_hits = _kw_overlap(new["fm"]["title"], old["fm"]["title"])
     return tag_hits * TAG_WEIGHT + kw_hits * KW_WEIGHT
 
@@ -127,6 +147,12 @@ def main():
         print(f"未找到目标笔记：{args.target}", file=sys.stderr)
         sys.exit(1)
 
+    # 全库标签词频，用于反规范化
+    tag_df = {}
+    for n in notes:
+        for t in set(n["fm"].get("tags") or []):
+            tag_df[t] = tag_df.get(t, 0) + 1
+
     # edges: file -> set(related files)
     edges = {n["file"]: set(n["fm"].get("related") or []) for n in notes}
     for t in targets:
@@ -134,7 +160,7 @@ def main():
         for o in notes:
             if o["file"] == t["file"]:
                 continue
-            s = score(t, o)
+            s = score(t, o, tag_df)
             if s >= THRESHOLD:
                 edges[t["file"]].add(o["file"])
                 edges[o["file"]].add(t["file"])
