@@ -29,7 +29,7 @@ const store = reactive({
   list: { items: [], total: 0, page: 1, size: 50 },
   current: null,        // 当前详情
   view: 'reader',       // reader | editor
-  editing: { name: '', title: '', category: 'misc', tags: [], body: '', raw_file: '' },
+  editing: { name: '', title: '', category: 'misc', tags: [], body: '', raw_file: '', url: '' },
   catCount: {},         // 分类 -> 篇数
   navOpen: false,       // 移动端抽屉
   toasts: [],
@@ -96,6 +96,7 @@ function startEdit(note) {
   store.editing = {
     name: n.name || '', title: n.title || '', category: n.category || 'misc',
     tags: [...(n.tags || [])], body: n.body || '', raw_file: n.raw_file || '',
+    url: n.url || '',
   };
   store.view = 'editor';
 }
@@ -120,6 +121,7 @@ const NavPane = {
     <div class="brand"><span class="logo">fuxi</span><span class="sub">知识库</span></div>
     <div class="nav-actions">
       <button class="btn primary block" @click="startEdit()">＋ 记笔记</button>
+      <button class="btn block" @click="startEdit({url: '', _urlPrompt: true}); promptUrl()">🔗 丢链接</button>
       <button class="btn block" @click="$refs.file.click()">上传</button>
       <input type="file" ref="file" hidden @change="uploadFile($event.target.files[0]); $event.target.value=''">
     </div>
@@ -150,6 +152,10 @@ const NavPane = {
     pick(c) { store.filters.category = store.filters.category === c ? '' : c; store.navOpen = false; loadList(1); },
     pickTag(t) { store.filters.tag = store.filters.tag === t ? '' : t; store.navOpen = false; loadList(1); },
     startEdit, uploadFile,
+    promptUrl() {
+      const url = prompt('粘贴原文链接（正文先贴到笔记里，抓取管线二期再做）：');
+      if (url) store.editing.url = url.trim();
+    },
   },
   data: () => ({ store }),
 };
@@ -213,6 +219,12 @@ const ReaderPane = {
         <span>{{ store.current.date }}</span>
         <span class="dot">{{ store.current.category }}</span>
         <span class="dot" v-for="t in store.current.tags" :key="t"><span class="chip">{{ t }}</span></span>
+        <span class="dot" v-if="store.current.url">
+          <a class="src-link" :href="store.current.url" target="_blank" rel="noopener">🔗 原文链接</a>
+        </span>
+        <span class="dot" v-if="store.current.raw_file">
+          <a class="src-link" :href="'/api/raw/' + encodeURIComponent(store.current.raw_file)">📎 原始文件</a>
+        </span>
       </div>
       <div class="reader-body">
         <div class="md" v-html="html"></div>
@@ -242,6 +254,10 @@ const EditorPane = {
         <select v-model="store.editing.category">
           <option v-for="c in store.categories" :key="c" :value="c">{{ c }}</option>
         </select>
+        <span class="lbl">原文链接</span>
+        <input class="url-input" v-model="store.editing.url" placeholder="https://…（可选）">
+      </div>
+      <div class="editor-row">
         <span class="lbl">标签</span>
         <span v-for="[t] in store.tagFreq" :key="t" class="chip" :class="{on: store.editing.tags.includes(t)}" @click="toggleTag(t)">{{ t }}</span>
       </div>

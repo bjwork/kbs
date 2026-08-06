@@ -21,6 +21,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -146,6 +147,8 @@ def get_note(name: str):
         "tags": fm.get("tags") or [],
         "related": fm.get("related") or [],
         "status": fm.get("status", ""),
+        "url": fm.get("url", ""),
+        "raw_file": fm.get("related_raw", ""),
         "body": note_body(text),
     }
 
@@ -176,6 +179,7 @@ class NoteIn(BaseModel):
     body: str = ""
     name: str = ""      # 编辑时传原文件名；新建时留空由服务端生成
     raw_file: str = ""  # 关联的 raw/ 文件名（上传场景）
+    url: str = ""       # 原文链接（ingest 链接场景）
 
 
 def _slugify(title: str) -> str:
@@ -186,10 +190,11 @@ def _slugify(title: str) -> str:
 
 def _write_note(name: str, note: NoteIn) -> None:
     tags = ", ".join(note.tags)
-    related_line = f"related_raw: {note.raw_file}\n" if note.raw_file else ""
+    raw_line = f"related_raw: {note.raw_file}\n" if note.raw_file else ""
+    url_line = f"url: {note.url}\n" if note.url else ""
     text = (
         f"---\ntitle: {note.title}\ndate: {date.today().isoformat()}\n"
-        f"category: {note.category}\ntags: [{tags}]\nstatus: raw\n{related_line}---\n\n"
+        f"category: {note.category}\ntags: [{tags}]\nstatus: raw\n{url_line}{raw_line}---\n\n"
         f"{note.body.strip()}\n"
     )
     (NOTES_DIR / name).write_text(text, encoding="utf-8")
@@ -289,6 +294,18 @@ async def upload(file: UploadFile):
     else:
         text = raw_path.read_text(encoding="utf-8", errors="ignore")
     return {"raw_file": raw_name, "text": text}
+
+
+# ---------- 原文下载 ----------
+
+@app.get("/api/raw/{name}")
+def get_raw(name: str):
+    """下载 raw/ 里的原文（pdf/docx/html/txt 等）。"""
+    name = _safe_name(name)
+    path = RAW_DIR / name
+    if not path.exists():
+        raise HTTPException(404, "原文不存在")
+    return FileResponse(path, filename=name)
 
 
 # ---------- 静态文件（PWA 前端） ----------
