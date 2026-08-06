@@ -14,3 +14,14 @@ __pycache__/
 .idea/
 .vscode/
 .claude/
+
+# raw/ 二进制原件不入库（保留纯文本 .md 版；原件靠本地备份）
+raw/*.pdf
+raw/*.docx
+raw/*.doc
+raw/*.html
+raw/*.htm
+
+# 服务端运行时产物
+server/data/
+trash/
