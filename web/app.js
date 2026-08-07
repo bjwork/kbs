@@ -3,7 +3,7 @@ const { createApp, ref, reactive, computed, onMounted, watch } = Vue;
 
 /* ---------- 工具 ---------- */
 function esc(s) {
-  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function md(src) {
   return DOMPurify.sanitize(marked.parse(src || '', { breaks: true }));
@@ -43,7 +43,7 @@ function toast(msg) {
 
 /* ---------- API 动作 ---------- */
 async function loadList(page) {
-  store.list.page = page ?? store.list.page;
+  store.list.page = page != null ? page : store.list.page;
   const p = new URLSearchParams({ page: store.list.page, size: store.list.size });
   const { q, category, tag } = store.filters;
   if (q) p.set('q', q);
@@ -110,7 +110,7 @@ async function uploadFiles(fileList) {
     const r = await api('/api/upload', { method: 'POST', body: fd });
     const ok = r.files.filter(f => !f.error);
     const fail = r.files.filter(f => f.error);
-    if (!ok.length) { toast('全部失败：' + (fail[0]?.error || '未知')); return; }
+    if (!ok.length) { toast('全部失败：' + ((fail[0] && fail[0].error) || '未知')); return; }
     // 多个文件正文拼一起，raw_files 全挂上
     const body = ok.map(f => f.text).join('\n\n---\n\n');
     const raw_files = ok.map(f => f.raw_file);
@@ -248,7 +248,7 @@ const ReaderPane = {
     </template>
   </main>`,
   computed: {
-    html() { return md(store.current?.body); },
+    html() { return md(store.current ? store.current.body : ''); },
   },
   methods: {
     startEdit, delNote, openNote,
