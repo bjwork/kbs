@@ -332,15 +332,19 @@ def get_raw(name: str):
 
 # ---------- 移动端适配 ----------
 
-_MOBILE_UA = re.compile(r"Mobile|Android|iPhone|iPad", re.I)
+_MOBILE_UA = re.compile(r"Mobile|Android|iPhone|iPad|MiuiBrowser|XiaoMi", re.I)
 
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
-    """按 User-Agent 分流：移动端给 mobile.html，桌面端给 index.html。"""
+    """按 User-Agent 分流：移动端给 mobile.html，桌面端给 index.html。
+    加 no-cache 避免浏览器缓存住错误版本（手机桌面模式缓存过桌面版）。"""
     ua = request.headers.get("user-agent", "")
-    page = "mobile.html" if _MOBILE_UA.search(ua) else "index.html"
-    return HTMLResponse((ROOT / "web" / page).read_text(encoding="utf-8"))
+    is_mobile = bool(_MOBILE_UA.search(ua))
+    page = "mobile.html" if is_mobile else "index.html"
+    body = (ROOT / "web" / page).read_text(encoding="utf-8")
+    print(f"[index] ua={ua[:80]} → {page}", file=sys.stderr)
+    return HTMLResponse(body, headers={"Cache-Control": "no-cache"})
 
 
 # ---------- 静态文件（PWA 前端） ----------
