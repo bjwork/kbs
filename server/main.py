@@ -19,9 +19,9 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query, UploadFile
+from fastapi import FastAPI, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -328,6 +328,19 @@ def get_raw(name: str):
     if not path.exists():
         raise HTTPException(404, "原文不存在")
     return FileResponse(path, filename=name)
+
+
+# ---------- 移动端适配 ----------
+
+_MOBILE_UA = re.compile(r"Mobile|Android|iPhone|iPad", re.I)
+
+
+@app.get("/", response_class=HTMLResponse)
+def index(request: Request):
+    """按 User-Agent 分流：移动端给 mobile.html，桌面端给 index.html。"""
+    ua = request.headers.get("user-agent", "")
+    page = "mobile.html" if _MOBILE_UA.search(ua) else "index.html"
+    return HTMLResponse((ROOT / "web" / page).read_text(encoding="utf-8"))
 
 
 # ---------- 静态文件（PWA 前端） ----------

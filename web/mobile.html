@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#faf9f6">
+<title>fuxi 知识库</title>
+<style>
+:root{--bg:#faf9f6;--card:#fff;--ink:#26241f;--dim:#9b968b;--accent:#b3541e;--accent-soft:#f6ece5;--line:#e9e6de;--hover:#f3f1ea;--radius:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent);text-decoration:none}
+
+/* 顶栏 */
+.topbar{position:sticky;top:0;background:var(--bg);z-index:10;padding:12px 14px 8px;border-bottom:1px solid var(--line)}
+.topbar h1{font-size:17px;font-weight:700;display:inline-block}
+.topbar .sub{font-size:12px;color:var(--dim);margin-left:6px}
+.actions{margin-top:8px;display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:8px 12px;border-radius:var(--radius);font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--card);transition:all .15s;flex:1}
+.btn:active{background:var(--hover)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* 搜索筛选 */
+.search-row{margin-top:8px}
+.search-row input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);font-size:14px;outline:none}
+.search-row input:focus{border-color:var(--accent)}
+.filters{display:flex;gap:8px;margin-top:8px}
+.filters select{flex:1;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);font-size:13px}
+.count{font-size:12px;color:var(--dim);padding:8px 14px 4px}
+
+/* 列表 */
+.list{padding:8px 14px 40px}
+.note-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px}
+.note-card:active{background:var(--hover)}
+.note-card h3{font-size:14.5px;font-weight:600;line-height:1.45;margin-bottom:5px}
+.note-card .meta{font-size:11.5px;color:var(--dim)}
+.note-card .cat{color:var(--accent);margin-left:6px}
+.note-card .tags{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
+.chip{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;background:var(--hover);color:#6b675e}
+.pager{text-align:center;padding:10px 0;display:flex;gap:10px;justify-content:center}
+.pager .btn{flex:0 0 auto;padding:7px 16px;font-size:13px}
+.empty{text-align:center;color:var(--dim);padding:48px 20px;font-size:13px}
+
+/* 详情 */
+.detail{background:var(--card);min-height:100vh}
+.detail-bar{position:sticky;top:0;background:var(--card);z-index:5;padding:10px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.detail-bar .back{font-size:15px;color:var(--accent);padding:4px 8px 4px 0}
+.detail-bar .spacer{flex:1}
+.detail-bar .btn{flex:0 0 auto;padding:6px 12px;font-size:12px}
+.detail-bar .btn.danger{color:#b03a2e}
+.detail-head{padding:16px 18px 0}
+.detail-head h1{font-size:19px;font-weight:700;line-height:1.4}
+.detail-meta{padding:8px 18px 0;font-size:12px;color:var(--dim);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.detail-meta .chip{font-size:11px}
+.src-link{color:var(--accent);font-size:12px}
+.detail-body{padding:14px 18px 60px}
+.md{font-size:15.5px;line-height:1.85;color:#33302a;word-break:break-word}
+.md h1,.md h2,.md h3{margin:1.3em 0 .5em;font-weight:700;line-height:1.4}
+.md h1{font-size:1.35em}.md h2{font-size:1.18em;padding-bottom:.3em;border-bottom:1px solid var(--line)}.md h3{font-size:1.08em}
+.md p{margin:.8em 0}
+.md ul,.md ol{margin:.8em 0;padding-left:1.5em}
+.md li{margin:.25em 0}
+.md blockquote{margin:1em 0;padding:2px 14px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 6px 6px 0}
+.md code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;background:var(--hover);padding:2px 5px;border-radius:4px;word-break:break-all}
+.md pre{background:#2b2823;color:#e8e4da;padding:12px 14px;border-radius:var(--radius);overflow-x:auto;margin:1em 0}
+.md pre code{background:none;padding:0;color:inherit;font-size:12.5px}
+.md table{border-collapse:collapse;margin:1em 0;width:100%;font-size:.9em;display:block;overflow-x:auto}
+.md th,.md td{border:1px solid var(--line);padding:5px 10px;text-align:left;white-space:nowrap}
+.md th{background:var(--hover)}
+.md hr{border:none;border-top:1px solid var(--line);margin:1.6em 0}
+.md strong{color:var(--ink)}
+.md img{max-width:100%}
+.related{margin-top:28px;padding-top:16px;border-top:1px dashed var(--line)}
+.related h4{font-size:12px;color:var(--dim);font-weight:600;letter-spacing:1px;margin-bottom:10px}
+.rel-card{padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius);font-size:13px;margin-bottom:8px;background:var(--bg)}
+.rel-card:active{border-color:var(--accent);color:var(--accent)}
+
+/* 编辑器 */
+.editor{min-height:100vh;background:var(--card);display:flex;flex-direction:column}
+.editor-bar{position:sticky;top:0;background:var(--card);z-index:5;padding:10px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center}
+.editor-bar .back{font-size:15px;color:var(--dim)}
+.editor-bar .spacer{flex:1}
+.editor-bar .btn.primary{flex:0 0 auto;padding:7px 18px;font-size:13px}
+.editor-form{padding:14px 16px;flex:1;display:flex;flex-direction:column;gap:12px}
+.f-row label{display:block;font-size:12px;color:var(--dim);margin-bottom:5px}
+.f-row input[type=text],.f-row textarea{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);font-size:14px;outline:none}
+.f-row input:focus,.f-row textarea:focus{border-color:var(--accent)}
+.f-row textarea{min-height:32vh;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.7;resize:vertical}
+.tag-pick{display:flex;flex-wrap:wrap;gap:6px}
+.tag-pick .chip{cursor:pointer;padding:4px 10px;font-size:12px}
+.tag-pick .chip.on{background:var(--accent);color:#fff}
+.tag-input{width:130px;padding:4px 10px;border:1px dashed var(--dim);border-radius:20px;background:transparent;font-size:12px;outline:none}
+
+/* toast */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#2c2a26;color:#f5f2ec;padding:10px 22px;border-radius:24px;font-size:13.5px;z-index:99;white-space:nowrap}
+.loading{text-align:center;color:var(--dim);padding:60px 0;font-size:14px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="loading">加载中…</div>
+</div>
+<script src="vendor/vue.global.prod.js"></script>
+<script src="vendor/marked.min.js"></script>
+<script src="vendor/purify.min.js"></script>
+<script src="mobile.js"></script>
+</body>
+</html>
