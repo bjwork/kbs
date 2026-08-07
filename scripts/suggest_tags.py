@@ -40,9 +40,16 @@ TAG_ZH = {
     "learning": "学习", "cooking": "美食", "rag": "检索增强", "reading": "阅读",
 }
 
+# 分类 → 中文展示名
+CATEGORY_ZH = {
+    "ai-practice": "AI 实操", "product-thinking": "产品思维", "tech": "技术",
+    "writing": "写作", "reading": "阅读", "misc": "杂项",
+}
 
-def suggest(text: str, existing_tags: list, top_k: int = 5) -> list:
-    """从 existing_tags 里挑出和 text 最相关的标签，按相关度排序。"""
+
+def suggest(text: str, existing_tags: list, top_k: int = 4) -> list:
+    """从 existing_tags 里挑出和 text 最相关的标签，按相关度排序。
+    上限 4 个：标签超过 5 个的笔记知识管理度不够集中，该考虑拆分了。"""
     if not text.strip():
         return []
     # jieba TF-IDF 提关键词（比全文本匹配准）

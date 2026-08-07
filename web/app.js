@@ -24,7 +24,7 @@ function debounce(fn, ms = 300) {
 
 /* ---------- 全局状态 ---------- */
 const store = reactive({
-  categories: [], tagFreq: [], tagZh: {},
+  categories: [], tagFreq: [], tagZh: {}, catZh: {},
   filters: { q: '', category: '', tag: '' },
   list: { items: [], total: 0, page: 1, size: 50 },
   current: null,        // 当前详情
@@ -45,6 +45,12 @@ function toast(msg) {
 function tagLabel(t) {
   const zh = store.tagZh[t];
   return zh ? `${t}(${zh})` : t;
+}
+
+/* 分类展示：同上 */
+function catLabel(c) {
+  const zh = store.catZh[c];
+  return zh ? `${c}(${zh})` : c;
 }
 
 /* ---------- API 动作 ---------- */
@@ -96,6 +102,7 @@ async function refreshTags() {
   store.categories = d.categories;
   store.catCount = d.cat_count || {};
   store.tagZh = d.tag_zh || {};
+  store.catZh = d.category_zh || {};
 }
 
 function startEdit(note) {
@@ -145,7 +152,7 @@ const NavPane = {
       <h4>分类</h4>
       <div class="nav-item" :class="{on: !store.filters.category}" @click="pick('')">全部<span class="n">{{ totalNotes }}</span></div>
       <div v-for="c in catList" :key="c.name" class="nav-item" :class="{on: store.filters.category === c.name}" @click="pick(c.name)">
-        {{ c.name }}<span class="n">{{ c.n }}</span>
+        {{ catLabel(c.name) }}<span class="n">{{ c.n }}</span>
       </div>
     </div>
     <div class="nav-sec">
@@ -167,7 +174,7 @@ const NavPane = {
   methods: {
     pick(c) { store.filters.category = store.filters.category === c ? '' : c; store.navOpen = false; loadList(1); },
     pickTag(t) { store.filters.tag = store.filters.tag === t ? '' : t; store.navOpen = false; loadList(1); },
-    startEdit, uploadFiles, tagLabel,
+    startEdit, uploadFiles, tagLabel, catLabel,
     promptUrl() {
       const url = prompt('粘贴原文链接（正文先贴到笔记里，抓取管线二期再做）：');
       if (url) store.editing.url = url.trim();
@@ -197,7 +204,7 @@ const ListPane = {
       <div v-for="n in store.list.items" :key="n.name" class="note-card"
            :class="{on: store.current && store.current.name === n.name}" @click="openNote(n.name)">
         <h3>{{ n.title }}</h3>
-        <div class="meta"><span>{{ n.date }}</span><span class="cat">{{ n.category }}</span></div>
+        <div class="meta"><span>{{ n.date }}</span><span class="cat">{{ catLabel(n.category) }}</span></div>
         <div class="tags" v-if="n.tags.length"><span v-for="t in n.tags" :key="t" class="chip">{{ tagLabel(t) }}</span></div>
       </div>
       <div class="pager" v-if="pages > 1">
@@ -210,7 +217,7 @@ const ListPane = {
     pages() { return Math.ceil(store.list.total / store.list.size); },
   },
   methods: {
-    tagLabel,
+    tagLabel, catLabel,
     onSearch: () => searchDebounced(),
     clearFilters() { store.filters.tag = ''; store.filters.category = ''; loadList(1); },
     openNote, loadList,
@@ -235,7 +242,7 @@ const ReaderPane = {
       </div>
       <div class="reader-meta">
         <span>{{ store.current.date }}</span>
-        <span class="dot">{{ store.current.category }}</span>
+        <span class="dot">{{ catLabel(store.current.category) }}</span>
         <span class="dot" v-for="t in store.current.tags" :key="t"><span class="chip">{{ tagLabel(t) }}</span></span>
         <span class="dot" v-if="store.current.url">
           <a class="src-link" :href="store.current.url" target="_blank" rel="noopener">🔗 原文链接</a>
@@ -259,7 +266,7 @@ const ReaderPane = {
     html() { return md(store.current ? store.current.body : ''); },
   },
   methods: {
-    tagLabel, startEdit, delNote, openNote,
+    tagLabel, catLabel, startEdit, delNote, openNote,
     shortName(f) {
       const base = f.replace(/^\d{4}-\d{2}-\d{2}-/, '');
       return base.length > 22 ? base.slice(0, 22) + '…' : base;
@@ -276,7 +283,7 @@ const EditorPane = {
       <div class="editor-row">
         <span class="lbl">分类</span>
         <select v-model="store.editing.category">
-          <option v-for="c in store.categories" :key="c" :value="c">{{ c }}</option>
+          <option v-for="c in store.categories" :key="c" :value="c">{{ catLabel(c) }}</option>
         </select>
         <span class="lbl">原文链接</span>
         <input class="url-input" v-model="store.editing.url" placeholder="https://…（可选）">
@@ -302,7 +309,7 @@ const EditorPane = {
   },
   data: () => ({ store, newTag: '' }),
   methods: {
-    tagLabel,
+    tagLabel, catLabel,
     toggleTag(t) {
       const i = store.editing.tags.indexOf(t);
       i >= 0 ? store.editing.tags.splice(i, 1) : store.editing.tags.push(t);

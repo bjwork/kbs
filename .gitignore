@@ -25,3 +25,4 @@ raw/*.htm
 # 服务端运行时产物
 server/data/
 trash/
+pr_lesson_html/

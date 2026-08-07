@@ -31,7 +31,7 @@
       return {
         view: 'list',           // list | detail | edit
         loading: true,
-        categories: [], tagFreq: [], catCount: {}, tagZh: {},
+        categories: [], tagFreq: [], catCount: {}, tagZh: {}, catZh: {},
         filters: { q: '', category: '', tag: '' },
         list: { items: [], total: 0, page: 1, size: 50 },
         current: null,
@@ -56,6 +56,7 @@
           self.categories = d.categories;
           self.catCount = d.cat_count || {};
           self.tagZh = d.tag_zh || {};
+          self.catZh = d.category_zh || {};
           return self.loadList(1);
         }).then(function () { self.loading = false; })
           .catch(function (e) { self.toast('加载失败：' + e.message); self.loading = false; });
@@ -68,6 +69,10 @@
       tagLabel: function (t) {
         var zh = this.tagZh[t];
         return zh ? (t + '(' + zh + ')') : t;
+      },
+      catLabel: function (c) {
+        var zh = this.catZh[c];
+        return zh ? (c + '(' + zh + ')') : c;
       },
       onSearch: function () { this._search(); },
       loadList: function (page) {
@@ -205,7 +210,7 @@
       '    <div class="filters">',
       '      <select v-model="filters.category" @change="loadList(1)">',
       '        <option value="">全部分类</option>',
-      '        <option v-for="c in categories" :key="c" :value="c">{{ c }} ({{ catCount[c] || 0 }})</option>',
+      '        <option v-for="c in categories" :key="c" :value="c">{{ catLabel(c) }} ({{ catCount[c] || 0 }})</option>',
       '      </select>',
       '      <select v-model="filters.tag" @change="loadList(1)">',
       '        <option value="">全部标签</option>',
@@ -219,7 +224,7 @@
       '    <div v-if="!list.items.length" class="empty">没有匹配的笔记</div>',
       '    <div v-for="n in list.items" :key="n.name" class="note-card" @click="openNote(n.name)">',
       '      <h3>{{ n.title }}</h3>',
-      '      <div class="meta">{{ n.date }}<span class="cat">{{ n.category }}</span></div>',
+      '      <div class="meta">{{ n.date }}<span class="cat">{{ catLabel(n.category) }}</span></div>',
       '      <div class="tags" v-if="n.tags.length"><span v-for="t in n.tags" :key="t" class="chip">{{ t }}</span></div>',
       '    </div>',
       '    <div class="pager" v-if="pages > 1">',
@@ -239,7 +244,7 @@
       '  </div>',
       '  <div class="detail-head"><h1>{{ current.title }}</h1></div>',
       '  <div class="detail-meta">',
-      '    <span>{{ current.date }}</span><span>·</span><span>{{ current.category }}</span>',
+      '    <span>{{ current.date }}</span><span>·</span><span>{{ catLabel(current.category) }}</span>',
       '    <span v-for="t in current.tags" :key="t" class="chip">{{ t }}</span>',
       '    <a v-if="current.url" class="src-link" :href="current.url" target="_blank" rel="noopener">🔗 原文链接</a>',
       '    <a v-for="rf in current.raw_files" :key="rf" class="src-link" :href="\'/api/raw/\' + encodeURIComponent(rf)">📎 {{ shortName(rf) }}</a>',
@@ -264,7 +269,7 @@
       '    <div class="f-row"><label>标题</label><input type="text" v-model="editing.title" placeholder="一句话说清核心"></div>',
       '    <div class="f-row"><label>分类</label>',
       '      <select v-model="editing.category" style="width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg)">',
-      '        <option v-for="c in categories" :key="c" :value="c">{{ c }}</option></select></div>',
+      '        <option v-for="c in categories" :key="c" :value="c">{{ catLabel(c) }}</option></select></div>',
       '    <div class="f-row"><label>原文链接（可选）</label><input type="text" v-model="editing.url" placeholder="https://…"></div>',
       '    <div class="f-row"><label>标签 <a href="javascript:;" style="color:var(--accent);font-weight:400" @click="suggestTags">✨ 智能推荐</a></label>',
       '      <div class="tag-pick">',

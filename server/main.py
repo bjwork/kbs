@@ -29,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_index import parse_frontmatter  # noqa: E402
 from indexer import DB_PATH, NOTES_DIR, insert_space, note_body, reindex  # noqa: E402
-from suggest_tags import TAG_ZH  # noqa: E402
+from suggest_tags import CATEGORY_ZH, TAG_ZH  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "raw"
@@ -176,6 +176,7 @@ def list_tags():
         "categories": CATEGORIES,
         "cat_count": {r[0]: r[1] for r in cat_rows},
         "tag_zh": TAG_ZH,
+        "category_zh": CATEGORY_ZH,
     }
 
 
