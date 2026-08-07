@@ -113,6 +113,27 @@
         if (this.editing.tags.indexOf(t) < 0) this.editing.tags.push(t);
         this.newTag = '';
       },
+      suggestTags: function () {
+        var self = this;
+        var text = self.editing.title + '\n' + self.editing.body;
+        if (!text.trim()) { self.toast('先写点正文'); return; }
+        self.toast('分析中…');
+        api('/api/suggest_tags', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text }),
+        }).then(function (d) {
+          // 推荐的标签合并进已选（不覆盖用户手选的）
+          d.tags.forEach(function (t) {
+            if (self.editing.tags.indexOf(t) < 0) self.editing.tags.push(t);
+          });
+          // 分类只在用户没改过时（还是默认 misc）才自动填
+          if (self.editing.category === 'misc' && d.category !== 'misc') {
+            self.editing.category = d.category;
+          }
+          self.toast(d.tags.length ? '推荐了 ' + d.tags.length + ' 个标签' : '没匹配到已有标签');
+        }).catch(function (e) { self.toast('推荐失败：' + e.message); });
+      },
       saveNote: function () {
         var self = this;
         if (!self.editing.title.trim()) { self.toast('标题不能为空'); return; }
@@ -240,7 +261,7 @@
       '      <select v-model="editing.category" style="width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg)">',
       '        <option v-for="c in categories" :key="c" :value="c">{{ c }}</option></select></div>',
       '    <div class="f-row"><label>原文链接（可选）</label><input type="text" v-model="editing.url" placeholder="https://…"></div>',
-      '    <div class="f-row"><label>标签</label>',
+      '    <div class="f-row"><label>标签 <a href="javascript:;" style="color:var(--accent);font-weight:400" @click="suggestTags">✨ 智能推荐</a></label>',
       '      <div class="tag-pick">',
       '        <span v-for="tg in tagFreq" :key="tg[0]" class="chip" :class="{on: editing.tags.indexOf(tg[0]) >= 0}" @click="toggleTag(tg[0])">{{ tg[0] }}</span>',
       '        <input class="tag-input" v-model="newTag" placeholder="＋新标签，回车" @keydown.enter.prevent="addTag">',

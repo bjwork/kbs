@@ -275,6 +275,7 @@ const EditorPane = {
       </div>
       <div class="editor-row">
         <span class="lbl">标签</span>
+        <button class="btn ghost" style="font-size:12px;color:var(--accent);padding:2px 8px" @click="suggestTags">✨ 智能推荐</button>
         <span v-for="[t] in store.tagFreq" :key="t" class="chip" :class="{on: store.editing.tags.includes(t)}" @click="toggleTag(t)">{{ t }}</span>
         <input class="tag-input" v-model="newTag" placeholder="＋新标签，回车添加" @keydown.enter.prevent="addTag">
       </div>
@@ -302,6 +303,20 @@ const EditorPane = {
       if (!t) return;
       if (!store.editing.tags.includes(t)) store.editing.tags.push(t);
       this.newTag = '';
+    },
+    async suggestTags() {
+      const text = store.editing.title + '\n' + store.editing.body;
+      if (!text.trim()) { toast('先写点正文'); return; }
+      toast('分析中…');
+      try {
+        const d = await api('/api/suggest_tags', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+        d.tags.forEach(t => { if (!store.editing.tags.includes(t)) store.editing.tags.push(t); });
+        if (store.editing.category === 'misc' && d.category !== 'misc') store.editing.category = d.category;
+        toast(d.tags.length ? `推荐了 ${d.tags.length} 个标签` : '没匹配到已有标签');
+      } catch (e) { toast('推荐失败：' + e.message); }
     },
     saveNote,
   },

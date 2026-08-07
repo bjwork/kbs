@@ -177,6 +177,22 @@ def list_tags():
     }
 
 
+class SuggestIn(BaseModel):
+    text: str
+
+
+@app.post("/api/suggest_tags")
+def suggest_tags_api(payload: SuggestIn):
+    """根据正文推荐标签和分类（jieba 关键词匹配，不创造新标签）。"""
+    from suggest_tags import suggest, suggest_category
+    conn = db()
+    rows = conn.execute("SELECT tags FROM notes").fetchall()
+    conn.close()
+    existing = sorted({t for r in rows for t in _parse_list(r[0])})
+    tags = suggest(payload.text, existing)
+    return {"tags": tags, "category": suggest_category(payload.text, tags)}
+
+
 # ---------- 录入 ----------
 
 class NoteIn(BaseModel):
