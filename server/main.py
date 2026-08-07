@@ -343,7 +343,6 @@ def index(request: Request):
     is_mobile = bool(_MOBILE_UA.search(ua))
     page = "mobile.html" if is_mobile else "index.html"
     body = (ROOT / "web" / page).read_text(encoding="utf-8")
-    print(f"[index] ua={ua[:80]} → {page}", file=sys.stderr)
     return HTMLResponse(body, headers={"Cache-Control": "no-cache"})
 
 
