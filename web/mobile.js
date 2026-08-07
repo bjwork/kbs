@@ -31,7 +31,7 @@
       return {
         view: 'list',           // list | detail | edit
         loading: true,
-        categories: [], tagFreq: [], catCount: {},
+        categories: [], tagFreq: [], catCount: {}, tagZh: {},
         filters: { q: '', category: '', tag: '' },
         list: { items: [], total: 0, page: 1, size: 50 },
         current: null,
@@ -55,6 +55,7 @@
           self.tagFreq = d.tags;
           self.categories = d.categories;
           self.catCount = d.cat_count || {};
+          self.tagZh = d.tag_zh || {};
           return self.loadList(1);
         }).then(function () { self.loading = false; })
           .catch(function (e) { self.toast('加载失败：' + e.message); self.loading = false; });
@@ -63,6 +64,10 @@
         var self = this;
         self.toastMsg = msg;
         setTimeout(function () { self.toastMsg = ''; }, 2600);
+      },
+      tagLabel: function (t) {
+        var zh = this.tagZh[t];
+        return zh ? (t + '(' + zh + ')') : t;
       },
       onSearch: function () { this._search(); },
       loadList: function (page) {
@@ -204,7 +209,7 @@
       '      </select>',
       '      <select v-model="filters.tag" @change="loadList(1)">',
       '        <option value="">全部标签</option>',
-      '        <option v-for="tg in tagFreq" :key="tg[0]" :value="tg[0]">{{ tg[0] }} ({{ tg[1] }})</option>',
+      '        <option v-for="tg in tagFreq" :key="tg[0]" :value="tg[0]">{{ tagLabel(tg[0]) }} ({{ tg[1] }})</option>',
       '      </select>',
       '    </div>',
       '  </div>',
@@ -263,7 +268,7 @@
       '    <div class="f-row"><label>原文链接（可选）</label><input type="text" v-model="editing.url" placeholder="https://…"></div>',
       '    <div class="f-row"><label>标签 <a href="javascript:;" style="color:var(--accent);font-weight:400" @click="suggestTags">✨ 智能推荐</a></label>',
       '      <div class="tag-pick">',
-      '        <span v-for="tg in tagFreq" :key="tg[0]" class="chip" :class="{on: editing.tags.indexOf(tg[0]) >= 0}" @click="toggleTag(tg[0])">{{ tg[0] }}</span>',
+      '        <span v-for="tg in tagFreq" :key="tg[0]" class="chip" :class="{on: editing.tags.indexOf(tg[0]) >= 0}" @click="toggleTag(tg[0])">{{ tagLabel(tg[0]) }}</span>',
       '        <input class="tag-input" v-model="newTag" placeholder="＋新标签，回车" @keydown.enter.prevent="addTag">',
       '      </div></div>',
       '    <div class="f-row"><label>正文（markdown）</label><textarea v-model="editing.body"></textarea></div>',

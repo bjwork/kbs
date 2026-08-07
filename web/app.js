@@ -24,7 +24,7 @@ function debounce(fn, ms = 300) {
 
 /* ---------- 全局状态 ---------- */
 const store = reactive({
-  categories: [], tagFreq: [],
+  categories: [], tagFreq: [], tagZh: {},
   filters: { q: '', category: '', tag: '' },
   list: { items: [], total: 0, page: 1, size: 50 },
   current: null,        // 当前详情
@@ -39,6 +39,12 @@ function toast(msg) {
   const id = Date.now() + Math.random();
   store.toasts.push({ id, msg });
   setTimeout(() => { store.toasts = store.toasts.filter(t => t.id !== id); }, 2600);
+}
+
+/* 标签展示：有中文备注就显示「英文(中文)」，没有就原样 */
+function tagLabel(t) {
+  const zh = store.tagZh[t];
+  return zh ? `${t}(${zh})` : t;
 }
 
 /* ---------- API 动作 ---------- */
@@ -89,6 +95,7 @@ async function refreshTags() {
   store.tagFreq = d.tags;
   store.categories = d.categories;
   store.catCount = d.cat_count || {};
+  store.tagZh = d.tag_zh || {};
 }
 
 function startEdit(note) {
@@ -145,7 +152,7 @@ const NavPane = {
       <h4>标签</h4>
       <div class="tag-cloud">
         <span v-for="[t, n] in store.tagFreq" :key="t" class="chip" :class="{on: store.filters.tag === t}" @click="pickTag(t)">
-          {{ t }}<span class="n">{{ n }}</span>
+          {{ tagLabel(t) }}<span class="n">{{ n }}</span>
         </span>
       </div>
     </div>
@@ -160,7 +167,7 @@ const NavPane = {
   methods: {
     pick(c) { store.filters.category = store.filters.category === c ? '' : c; store.navOpen = false; loadList(1); },
     pickTag(t) { store.filters.tag = store.filters.tag === t ? '' : t; store.navOpen = false; loadList(1); },
-    startEdit, uploadFiles,
+    startEdit, uploadFiles, tagLabel,
     promptUrl() {
       const url = prompt('粘贴原文链接（正文先贴到笔记里，抓取管线二期再做）：');
       if (url) store.editing.url = url.trim();
@@ -191,7 +198,7 @@ const ListPane = {
            :class="{on: store.current && store.current.name === n.name}" @click="openNote(n.name)">
         <h3>{{ n.title }}</h3>
         <div class="meta"><span>{{ n.date }}</span><span class="cat">{{ n.category }}</span></div>
-        <div class="tags" v-if="n.tags.length"><span v-for="t in n.tags" :key="t" class="chip">{{ t }}</span></div>
+        <div class="tags" v-if="n.tags.length"><span v-for="t in n.tags" :key="t" class="chip">{{ tagLabel(t) }}</span></div>
       </div>
       <div class="pager" v-if="pages > 1">
         <button class="btn" v-if="store.list.page > 1" @click="loadList(store.list.page - 1)">上一页</button>
@@ -203,6 +210,7 @@ const ListPane = {
     pages() { return Math.ceil(store.list.total / store.list.size); },
   },
   methods: {
+    tagLabel,
     onSearch: () => searchDebounced(),
     clearFilters() { store.filters.tag = ''; store.filters.category = ''; loadList(1); },
     openNote, loadList,
@@ -228,7 +236,7 @@ const ReaderPane = {
       <div class="reader-meta">
         <span>{{ store.current.date }}</span>
         <span class="dot">{{ store.current.category }}</span>
-        <span class="dot" v-for="t in store.current.tags" :key="t"><span class="chip">{{ t }}</span></span>
+        <span class="dot" v-for="t in store.current.tags" :key="t"><span class="chip">{{ tagLabel(t) }}</span></span>
         <span class="dot" v-if="store.current.url">
           <a class="src-link" :href="store.current.url" target="_blank" rel="noopener">🔗 原文链接</a>
         </span>
@@ -251,7 +259,7 @@ const ReaderPane = {
     html() { return md(store.current ? store.current.body : ''); },
   },
   methods: {
-    startEdit, delNote, openNote,
+    tagLabel, startEdit, delNote, openNote,
     shortName(f) {
       const base = f.replace(/^\d{4}-\d{2}-\d{2}-/, '');
       return base.length > 22 ? base.slice(0, 22) + '…' : base;
@@ -276,7 +284,7 @@ const EditorPane = {
       <div class="editor-row">
         <span class="lbl">标签</span>
         <button class="btn ghost" style="font-size:12px;color:var(--accent);padding:2px 8px" @click="suggestTags">✨ 智能推荐</button>
-        <span v-for="[t] in store.tagFreq" :key="t" class="chip" :class="{on: store.editing.tags.includes(t)}" @click="toggleTag(t)">{{ t }}</span>
+        <span v-for="[t] in store.tagFreq" :key="t" class="chip" :class="{on: store.editing.tags.includes(t)}" @click="toggleTag(t)">{{ tagLabel(t) }}</span>
         <input class="tag-input" v-model="newTag" placeholder="＋新标签，回车添加" @keydown.enter.prevent="addTag">
       </div>
     </div>
@@ -294,6 +302,7 @@ const EditorPane = {
   },
   data: () => ({ store, newTag: '' }),
   methods: {
+    tagLabel,
     toggleTag(t) {
       const i = store.editing.tags.indexOf(t);
       i >= 0 ? store.editing.tags.splice(i, 1) : store.editing.tags.push(t);

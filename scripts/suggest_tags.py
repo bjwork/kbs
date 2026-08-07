@@ -32,6 +32,14 @@ TAG_KEYWORDS = {
     "reading": ["阅读", "书", "专栏", "教程", "课程", "reading"],
 }
 
+# 英文标签 → 中文展示名（前端显示用，后端存英文不变）
+TAG_ZH = {
+    "index": "索引", "lock": "锁", "transaction": "事务", "performance": "性能",
+    "architecture": "架构", "ha": "高可用", "ops": "运维", "optimizer": "优化器",
+    "security": "安全", "knowledge-base": "知识库", "llm": "大模型", "workflow": "工作流",
+    "learning": "学习", "cooking": "美食", "rag": "检索增强", "reading": "阅读",
+}
+
 
 def suggest(text: str, existing_tags: list, top_k: int = 5) -> list:
     """从 existing_tags 里挑出和 text 最相关的标签，按相关度排序。"""
