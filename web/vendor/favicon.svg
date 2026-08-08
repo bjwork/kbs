@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- 甲骨文「册」：四根竹简 + 一道编绳。赭红 #b3541e，与 fuxi 主色一致 -->
+  <g fill="none" stroke="#b3541e" stroke-linecap="round">
+    <!-- 四根竹简：竖笔，起笔稍重、收笔略尖（用刀刻感） -->
+    <path d="M7.5 4.5 Q7 16 7.5 27.5" stroke-width="2.6"/>
+    <path d="M13.5 4.5 Q13.2 16 13.5 27.5" stroke-width="2.6"/>
+    <path d="M19.5 4.5 Q19.8 16 19.5 27.5" stroke-width="2.6"/>
+    <path d="M25.5 4.5 Q26 16 25.5 27.5" stroke-width="2.6"/>
+    <!-- 编绳：一道横线，贯穿四简 -->
+    <path d="M3.5 16 Q16 15.4 28.5 16" stroke-width="2.2"/>
+  </g>
+</svg>
