@@ -16,6 +16,7 @@
 - `scripts/build_index.py` + `scripts/rel_score.py`：索引生成 + 关联打分
 - MySQL 45 讲入库：45 篇 PDF + 45 篇带立场笔记，共 48 篇
 - **李运华「从 0 开始学架构」入库（2026-08-07）**：73 篇 HTML 原文（raw/ 含同名 .md 转换版）+ 73 篇带立场笔记（pr00-pr72），覆盖 4R 定义、复杂度来源、架构流程、高性能/高可用/可扩展模式、异地多活、微服务、互联网架构模板、架构重构、特别放送与加餐
+- **张磊「深入剖析 Kubernetes」入库（2026-08-12）**：57 篇 HTML 原文 + 57 篇带立场笔记（k8s00-k8s56），覆盖容器原理（Namespace/Cgroups/镜像分层）、K8s 本质、Pod/Deployment/StatefulSet/DaemonSet/Job、声明式 API + 控制器 + Operator、PV/PVC/CSI 存储、CNI/Service/Ingress 网络、调度器、CRI/容器运行时、监控日志、开源社区。新增 `scripts/html_to_md.py` 沉淀极客时间 slate editor HTML→md 转换（机械活归脚本），新增 `kubernetes`/`container` 等标签
 
 ### v1.5（离线服务版，2026-08-06 至 2026-08-07）
 - **服务端 `server/`**（FastAPI + SQLite FTS5）：检索（全文 bm25 + 筛选 + 分页）、详情+related、笔记 CRUD（删除移 trash/）、多文件上传转换管线（pdf/docx/html/md/txt/代码文件）、raw 原文下载
@@ -52,6 +53,7 @@
 
 ## 最近验证
 
+- 2026-08-12：K8s 专栏 57 篇全量入库完成。`scripts/html_to_md.py` 批量转 57 个 slate HTML→md，`rel_score.py --all` 全量重算 + `build_index.py` 重建索引（178 篇），笔记间建立起关联（k8s 系列内部调度器三连、网络四连、存储四连、CRI 二连等，k8s47 与 k8s06 跨篇章安全容器↔隔离）。
 - 2026-08-07：架构专栏 73 篇全量入库完成。`rel_score.py --all` 全量重算 + `build_index.py` 重建索引（121 篇），笔记间建立起跨系列关联（pr 系列内部、pr 与 mysql45 之间）。
 - 2026-08-07：移动端独立页面上线。X 浏览器/小米浏览器/夸克实测可用（全 ES5 语法修复老内核白屏）；UA 分流（桌面→三栏，移动→单页）。
 - 2026-08-07：修复 SQLite 孤儿清理 bug（集合推导解包错误），删除笔记后索引正确同步。

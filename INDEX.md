@@ -1,6 +1,6 @@
 # INDEX
 
-> 自动生成，请勿手改。共 121 篇，更新于 2026-08-08
+> 自动生成，请勿手改。共 178 篇，更新于 2026-08-12
 
 ## 按分类
 
@@ -132,28 +132,116 @@
 - [[2026-08-07-pr67-加餐-单服务器高性能性能对比.md]] 用真实压测数据补齐 PPC/TPC/Reactor 七种网络模式的性能对比 `architecture` `java`
 - [[2026-08-07-pr68-加餐-扒一扒中台皇帝的外衣.md]] 从使用方视角拆穿中台神话：大业务优先、轮子常换、快是错觉 `architecture`
 - [[2026-08-07-pr70-ChatGPT来临架构师何去何从.md]] ChatGPT 取代不了架构师，但会淘汰只背 API 的程序员 `architecture` `ai-native`
+- [[2026-08-12-k8s00-开篇词-打通容器技术任督二脉.md]] 容器不是轻量虚拟机，是带视角的进程——K8s 专栏开篇 `kubernetes` `container` `architecture` `reading`
+- [[2026-08-12-k8s01-预习-小鲸鱼大事记一-初出茅庐.md]] Docker 镜像靠「打包整个 OS」对 PaaS 完成降维打击 `kubernetes` `container` `architecture` `reading`
+- [[2026-08-12-k8s02-预习-小鲸鱼大事记二-崭露头角.md]] Docker 崛起靠「搞定开发者」而非技术领先——开源项目的传播策略 `kubernetes` `container` `architecture` `reading`
+- [[2026-08-12-k8s03-预习-小鲸鱼大事记三-群雄并起.md]] 容器编排之争开场：Swarm 抢原生体验，Mesos 抢大规模，K8s 还没上场 `kubernetes` `container` `architecture` `scheduler` `reading`
+- [[2026-08-12-k8s04-预习-小鲸鱼大事记四-尘埃落定.md]] K8s 赢在民主化架构与基金会博弈，Docker 输在封闭绑定 `kubernetes` `container` `architecture` `operator` `reading`
+- [[2026-08-12-k8s05-白话容器基础一-从进程说开去.md]] 容器本质是带 Namespace 障眼法的进程，不是轻量虚拟机 `kubernetes` `container` `runtime` `architecture` `reading`
+- [[2026-08-12-k8s06-白话容器基础二-隔离与限制.md]] Namespace 隔离不彻底+Cgroups 限制有盲区，容器不是安全沙盒 `kubernetes` `container` `runtime` `security` `reading`
+- [[2026-08-12-k8s07-白话容器基础三-深入理解容器镜像.md]] 容器镜像=rootfs+分层联合挂载，打包操作系统而非内核 `kubernetes` `container` `storage` `architecture` `reading`
+- [[2026-08-12-k8s08-白话容器基础四-重新认识Docker容器.md]] Docker 全景：Namespace+Cgroups+rootfs+Volume 绑定挂载的组装 `kubernetes` `container` `storage` `runtime` `reading`
+- [[2026-08-12-k8s09-从容器到容器云-Kubernetes的本质.md]] K8s 本质是声明式 API，不是更高级的调度器 `kubernetes` `container` `architecture` `reading`
+- [[2026-08-12-k8s10-kubeadm一键部署.md]] kubeadm 把 K8s 部署从黑魔法变成流水线 `kubernetes` `deployment` `architecture` `reading`
+- [[2026-08-12-k8s11-从0到1搭建Kubernetes集群.md]] 从 0 到 1 搭集群：kubeadm + 一切皆容器的实战 `kubernetes` `deployment` `cni` `csi` `reading`
+- [[2026-08-12-k8s12-第一个容器化应用.md]] 第一个容器化应用：从 docker run 到 kubectl apply `kubernetes` `deployment` `pod` `reading`
+- [[2026-08-12-k8s13-为什么需要Pod.md]] Pod 是调度单元，容器只是 Pod 里的进程 `kubernetes` `pod` `architecture` `reading`
+- [[2026-08-12-k8s14-Pod对象基本概念.md]] Pod 对象基本概念：哪些属性归 Pod，哪些归容器 `kubernetes` `pod` `architecture` `reading`
+- [[2026-08-12-k8s15-Pod对象使用进阶.md]] Pod 使用进阶：Projected Volume、健康检查与恢复策略 `kubernetes` `pod` `security` `reading`
+- [[2026-08-12-k8s16-控制器模型.md]] 控制器模型=期望状态 vs 实际状态的调谐循环 `kubernetes` `architecture` `deployment` `reading`
+- [[2026-08-12-k8s17-作业副本与水平扩展-Deployment.md]] Deployment 双层控制器：ReplicaSet 管副本，滚动更新+回滚降维打击 `kubernetes` `container` `architecture` `deployment` `reading`
+- [[2026-08-12-k8s18-StatefulSet一-拓扑状态.md]] StatefulSet 一：靠 Headless Service+Pod 编号固定拓扑状态 `kubernetes` `container` `architecture` `statefulset` `reading`
+- [[2026-08-12-k8s19-StatefulSet二-存储状态.md]] StatefulSet 二：PVC/PV 解耦存储细节，volumeClaimTemplate 绑定 Pod `kubernetes` `container` `architecture` `statefulset` `reading`
+- [[2026-08-12-k8s20-StatefulSet三-有状态应用实践.md]] StatefulSet 三：MySQL 主从实践暴露有状态应用的「三座大山」 `kubernetes` `container` `architecture` `statefulset` `reading`
+- [[2026-08-12-k8s21-DaemonSet-容器化守护进程.md]] DaemonSet：靠 nodeAffinity+Toleration 保证每节点一 Pod 的守护进程 `kubernetes` `container` `architecture` `daemonset` `reading`
+- [[2026-08-12-k8s22-Job与CronJob-离线业务.md]] Job/CronJob：离线批处理进 K8s，parallelism+completions 控并行 `kubernetes` `container` `architecture` `job` `reading`
+- [[2026-08-12-k8s23-声明式API与编程范式.md]] 声明式 API 的本质是 PATCH，Istio Initializer 靠它无感注入 Envoy `kubernetes` `container` `architecture` `api` `reading`
+- [[2026-08-12-k8s24-API对象的奥秘.md]] API 对象的 G/V/R 树形寻址，CRD 让用户自定义 API 资源类型 `kubernetes` `container` `architecture` `api` `reading`
+- [[2026-08-12-k8s25-编写自定义控制器.md]] 自定义控制器：Informer+workQueue 是 K8s 控制器的骨架 `kubernetes` `controller` `api` `architecture` `reading`
+- [[2026-08-12-k8s26-RBAC权限控制.md]] RBAC 是 K8s 多租户安全的基础，绑定粒度决定泄露半径 `kubernetes` `rbac` `api` `security` `reading`
+- [[2026-08-12-k8s27-Operator工作原理.md]] Operator=CRD+自定义控制器，把运维专家知识编码成软件 `kubernetes` `operator` `controller` `architecture` `reading`
+- [[2026-08-12-k8s28-PV-PVC-StorageClass.md]] PV/PVC/StorageClass 把存储拆成接口与实现，两阶段处理是落盘骨架 `kubernetes` `storage` `pv` `pvc` `reading`
+- [[2026-08-12-k8s29-本地持久化卷与PV-PVC.md]] 本地持久化卷证明 PV/PVC 体系不是过度设计，延迟绑定是关键 `kubernetes` `storage` `pv` `pvc` `reading`
+- [[2026-08-12-k8s30-FlexVolume与CSI存储插件.md]] FlexVolume 是脚本式存储插件，CSI 把存储插件标准化并 gRPC 化 `kubernetes` `storage` `csi` `architecture` `reading`
+- [[2026-08-12-k8s31-CSI插件编写指南.md]] CSI 插件编写指南：三服务+三 External Components 的完整落盘流程 `kubernetes` `storage` `csi` `architecture` `reading`
+- [[2026-08-12-k8s32-浅谈容器网络.md]] 容器网络本质是 veth pair+bridge，跨主机靠 overlay/underlay `kubernetes` `network` `container` `architecture` `reading`
+- [[2026-08-12-k8s33-容器跨主机网络.md]] overlay（VXLAN/UDP）vs underlay 的取舍，debug 跨主机不通的本质 `kubernetes` `network` `cni` `architecture` `reading`
+- [[2026-08-12-k8s34-Kubernetes网络模型与CNI.md]] CNI 是 K8s 网络插件标准，Flannel/Calico/Cilium 各有取舍 `kubernetes` `cni` `network` `architecture` `reading`
+- [[2026-08-12-k8s35-Kubernetes三层网络方案.md]] 三层方案（Calico BGP）避免 overlay 性能损耗，适合大规模集群 `kubernetes` `network` `cni` `architecture` `reading`
+- [[2026-08-12-k8s36-Kubernetes只有soft-multi-tenancy.md]] K8s 的 namespace 隔离是软隔离，强隔离要靠 VM 或虚拟集群 `kubernetes` `network` `security` `architecture` `reading`
+- [[2026-08-12-k8s37-Service-DNS与服务发现.md]] Service 是反向代理+负载均衡+固定IP，对比 Spring Cloud Eureka 的声明式服务发现 `kubernetes` `service` `dns` `network` `reading`
+- [[2026-08-12-k8s38-连通Service与调试三板斧.md]] iptables/ipvs/conntrack 是 debug Service 的三板斧，运维必备 `kubernetes` `service` `network` `debugging` `reading`
+- [[2026-08-12-k8s39-Service与Ingress.md]] Ingress 是七层入口，Nginx Ingress Controller 对比传统 Nginx+Keepalived 的取舍 `kubernetes` `ingress` `service` `network` `reading`
+- [[2026-08-12-k8s40-资源模型与资源管理.md]] requests/limits 是调度和 QoS 依据，Java JVM 堆与容器 limit 的坑要踩明白 `kubernetes` `resource` `scheduling` `architecture` `reading`
+- [[2026-08-12-k8s41-默认调度器在十字路口.md]] 调度器在十字路口：默认调度器走通用路线，复杂场景要插件化 `kubernetes` `scheduling` `scheduler` `architecture` `reading`
+- [[2026-08-12-k8s42-调度策略解析.md]] 调度策略解析：预选四类过滤+优选打分，通用路线够用但不深 `kubernetes` `scheduling` `scheduler` `reading`
+- [[2026-08-12-k8s43-优先级与抢占机制.md]] 优先级与抢占：高优Pod挤走低优Pod，双队列调度 `kubernetes` `scheduling` `scheduler` `reading`
+- [[2026-08-12-k8s44-GPU管理与Device-Plugin.md]] Device Plugin：K8s管理扩展资源（GPU/网卡）的机制，可用但不好用 `kubernetes` `gpu` `scheduling` `runtime` `reading`
+- [[2026-08-12-k8s45-SIG-Node与CRI.md]] SIG-Node与kubelet：CRI解耦运行时，docker-shim被弃是必然 `kubernetes` `runtime` `cri` `architecture` `reading`
+- [[2026-08-12-k8s46-CRI与容器运行时.md]] CRI接口设计：只关注容器不关注Pod，Streaming API靠重定向 `kubernetes` `runtime` `cri` `architecture` `reading`
+- [[2026-08-12-k8s47-Kata-Containers与gVisor.md]] 安全容器：轻量VM做隔离，弥补namespace共享内核的软隔离 `kubernetes` `security` `runtime` `container` `reading`
+- [[2026-08-12-k8s48-Prometheus与监控体系.md]] Prometheus是云原生监控事实标准，Metrics Server只管K8s内部 `kubernetes` `monitoring` `architecture` `reading`
+- [[2026-08-12-k8s49-Custom-Metrics与Auto-Scaling.md]] Custom Metrics：让 HPA 真正可用的自定义指标扩缩容 `kubernetes` `autoscaling` `monitoring` `reading`
+- [[2026-08-12-k8s50-容器日志收集与管理.md]] 容器日志收集：DaemonSet vs Sidecar 两条路线的取舍 `kubernetes` `logging` `architecture` `reading`
+- [[2026-08-12-k8s51-开源社区与未来走向.md]] K8s 社区治理：SIG 与 OWNERS 机制是开源胜利的底层密码 `kubernetes` `community` `open-source` `reading`
+- [[2026-08-12-k8s52-答疑集锦.md]] 答疑集锦：高频痛点里的真问题与冷知识 `kubernetes` `architecture` `reading`
+- [[2026-08-12-k8s53-特别放送-2019容器生态展望.md]] 2019 容器生态展望：以 2026 视角回看张磊的三张牌 `kubernetes` `cloud-native` `reading`
+- [[2026-08-12-k8s54-云原生应用管理怎么做.md]] 云原生应用管理：自描述 YAML 与应用管理的三条路线 `kubernetes` `architecture` `cloud-native` `reading`
+- [[2026-08-12-k8s55-结束语-赢开发者赢天下.md]] 结束语：赢开发者赢天下——K8s 民主化生态战略的总结 `kubernetes` `architecture` `cloud-native` `reading`
+- [[2026-08-12-k8s56-结课测试.md]] 结课测试：20 道题是查漏补缺的索引而非终点 `kubernetes` `reading`
 
 ## 按标签
 
-- `reading` × 87
-- `architecture` × 84
+- `reading` × 144
+- `architecture` × 122
+- `kubernetes` × 57
+- `container` × 20
 - `java` × 14
 - `performance` × 13
 - `transaction` × 11
 - `index` × 9
+- `network` × 8
 - `ha` × 7
 - `lock` × 7
 - `ops` × 7
+- `runtime` × 7
+- `security` × 7
 - `growth` × 6
+- `storage` × 6
 - `workflow` × 6
+- `deployment` × 5
+- `scheduling` × 5
+- `api` × 4
+- `cloud-native` × 4
+- `cni` × 4
 - `optimizer` × 4
+- `pod` × 4
+- `scheduler` × 4
+- `csi` × 3
 - `llm` × 3
 - `microservice` × 3
+- `open-source` × 3
+- `service` × 3
+- `statefulset` × 3
+- `controller` × 2
+- `cri` × 2
 - `knowledge-base` × 2
 - `learning` × 2
-- `open-source` × 2
-- `security` × 2
+- `monitoring` × 2
+- `operator` × 2
+- `pv` × 2
+- `pvc` × 2
 - `ai-native` × 1
-- `cloud-native` × 1
+- `autoscaling` × 1
+- `community` × 1
 - `cooking` × 1
+- `daemonset` × 1
+- `debugging` × 1
+- `dns` × 1
+- `gpu` × 1
+- `ingress` × 1
+- `job` × 1
+- `logging` × 1
 - `rag` × 1
+- `rbac` × 1
+- `resource` × 1
