@@ -17,6 +17,7 @@
 - MySQL 45 讲入库：45 篇 PDF + 45 篇带立场笔记，共 48 篇
 - **李运华「从 0 开始学架构」入库（2026-08-07）**：73 篇 HTML 原文（raw/ 含同名 .md 转换版）+ 73 篇带立场笔记（pr00-pr72），覆盖 4R 定义、复杂度来源、架构流程、高性能/高可用/可扩展模式、异地多活、微服务、互联网架构模板、架构重构、特别放送与加餐
 - **张磊「深入剖析 Kubernetes」入库（2026-08-12）**：57 篇 HTML 原文 + 57 篇带立场笔记（k8s00-k8s56），覆盖容器原理（Namespace/Cgroups/镜像分层）、K8s 本质、Pod/Deployment/StatefulSet/DaemonSet/Job、声明式 API + 控制器 + Operator、PV/PVC/CSI 存储、CNI/Service/Ingress 网络、调度器、CRI/容器运行时、监控日志、开源社区。新增 `scripts/html_to_md.py` 沉淀极客时间 slate editor HTML→md 转换（机械活归脚本），新增 `kubernetes`/`container` 等标签
+- **标签中文备注持久化（2026-08-12）**：`TAG_ZH` 从硬编码改为 `scripts/tags_meta.json`（数据本体，可 git 跟踪），一次性补全 37 个无备注标签（库里 53 个标签全量有中文）；新增 `upsert_tag_zh()` 原子写回。前端录入新标签弹 prompt 填备注，`POST /api/notes` 自动持久化；Claude ingest 走 `upsert_tag_zh` 脚本同步备注（约定写入 CLAUDE.md）。双端（PC + 移动）addTag 均改造
 
 ### v1.5（离线服务版，2026-08-06 至 2026-08-07）
 - **服务端 `server/`**（FastAPI + SQLite FTS5）：检索（全文 bm25 + 筛选 + 分页）、详情+related、笔记 CRUD（删除移 trash/）、多文件上传转换管线（pdf/docx/html/md/txt/代码文件）、raw 原文下载
@@ -31,11 +32,7 @@
 
 ## 进行中
 
-- 14 天自用验证：日常往库里丢链接和想法，观察使用频率
-- **标签自动推荐 + 中文备注**（2026-08-07 启动，2026-08-12 备注持久化完成）：
-  - `scripts/suggest_tags.py`：jieba 分词 + 已有标签关键词匹配，编辑器「智能推荐」按钮
-  - 标签前端展示「英文(中文)」，后端存英文不变
-  - **标签中文备注持久化（2026-08-12）**：`TAG_ZH` 从硬编码改为 `scripts/tags_meta.json`（数据本体），一次性补全 37 个无备注标签（库里 53 个标签全量有中文）；新增 `upsert_tag_zh()` 原子写回。前端录入新标签弹 prompt 填备注，`POST /api/notes` 自动持久化；Claude ingest 走 `upsert_tag_zh` 脚本同步备注（约定写入 CLAUDE.md）。双端（PC + 移动）addTag 均改造。
+- 14 天自用验证：日常往库里丢链接和想法，观察使用频率（至 2026-08-19）
 
 ## 待办
 
