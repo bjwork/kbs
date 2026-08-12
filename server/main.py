@@ -29,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_index import parse_frontmatter  # noqa: E402
 from indexer import DB_PATH, NOTES_DIR, insert_space, note_body, reindex  # noqa: E402
-from suggest_tags import CATEGORY_ZH, TAG_ZH  # noqa: E402
+from suggest_tags import CATEGORY_ZH, TAG_ZH, upsert_tag_zh  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "raw"
@@ -206,6 +206,7 @@ class NoteIn(BaseModel):
     name: str = ""            # 编辑时传原文件名；新建时留空由服务端生成
     raw_files: list[str] = []  # 关联的 raw/ 文件名列表（上传场景）
     url: str = ""              # 原文链接（ingest 链接场景）
+    tag_zh: dict[str, str] = {}  # 本次录入新标签的中文备注（前端/Claude 传，持久化到 tags_meta.json）
 
 
 def _slugify(title: str) -> str:
@@ -244,6 +245,9 @@ def save_note(note: NoteIn):
         if (NOTES_DIR / name).exists():
             raise HTTPException(409, f"同名笔记已存在：{name}")
     _write_note(name, note)
+    # 新标签的中文备注持久化到 tags_meta.json（前端/Claude 录入时提供值）
+    for tag, zh in note.tag_zh.items():
+        upsert_tag_zh(tag, zh)
     # 关联重算（增量，复用 rel_score.py）
     r = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "rel_score.py"), name],

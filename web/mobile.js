@@ -35,7 +35,7 @@
         filters: { q: '', category: '', tag: '' },
         list: { items: [], total: 0, page: 1, size: 50 },
         current: null,
-        editing: { name: '', title: '', category: 'misc', tags: [], body: '', raw_files: [], url: '' },
+        editing: { name: '', title: '', category: 'misc', tags: [], tagZh: {}, body: '', raw_files: [], url: '' },
         newTag: '',
         toastMsg: '',
       };
@@ -107,7 +107,7 @@
         var n = note || {};
         this.editing = {
           name: n.name || '', title: n.title || '', category: n.category || 'misc',
-          tags: (n.tags || []).slice(), body: n.body || '',
+          tags: (n.tags || []).slice(), tagZh: {}, body: n.body || '',
           raw_files: (n.raw_files || []).slice(), url: n.url || '',
         };
         this.view = 'edit';
@@ -120,7 +120,16 @@
       addTag: function () {
         var t = this.newTag.trim();
         if (!t) return;
-        if (this.editing.tags.indexOf(t) < 0) this.editing.tags.push(t);
+        if (this.editing.tags.indexOf(t) < 0) {
+          this.editing.tags.push(t);
+          if (!this.tagZh[t]) {
+            var zh = prompt('给标签「' + t + '」加个中文名（可选）：');
+            if (zh && zh.trim()) {
+              this.editing.tagZh[t] = zh.trim();
+              this.tagZh[t] = zh.trim();
+            }
+          }
+        }
         this.newTag = '';
       },
       suggestTags: function () {
@@ -150,7 +159,12 @@
         api('/api/notes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(self.editing),
+          body: JSON.stringify({
+            title: self.editing.title, category: self.editing.category,
+            tags: self.editing.tags, tag_zh: self.editing.tagZh,
+            body: self.editing.body, name: self.editing.name,
+            raw_files: self.editing.raw_files, url: self.editing.url,
+          }),
         }).then(function (r) {
           self.toast('已保存');
           return self.loadList(self.list.page).then(function () { return self.openNote(r.name); });

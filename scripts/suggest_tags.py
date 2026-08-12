@@ -8,7 +8,9 @@
     from suggest_tags import suggest
     suggest("正文文本", existing_tags=["index", "lock", ...], top_k=5)
 """
+import json
 import re
+from pathlib import Path
 
 import jieba.analyse
 
@@ -33,12 +35,29 @@ TAG_KEYWORDS = {
 }
 
 # 英文标签 → 中文展示名（前端显示用，后端存英文不变）
-TAG_ZH = {
-    "index": "索引", "lock": "锁", "transaction": "事务", "performance": "性能",
-    "architecture": "架构", "ha": "高可用", "ops": "运维", "optimizer": "优化器",
-    "security": "安全", "knowledge-base": "知识库", "llm": "大模型", "workflow": "工作流",
-    "learning": "学习", "cooking": "美食", "rag": "检索增强", "reading": "阅读",
-}
+# 持久化在 tags_meta.json，可动态写入（新标签录入时 upsert_tag_zh），不硬编码
+_META_PATH = Path(__file__).parent / "tags_meta.json"
+
+
+def _load_tag_zh() -> dict:
+    """从 tags_meta.json 加载标签→中文映射。文件不存在时回退空 dict。"""
+    if _META_PATH.exists():
+        return json.loads(_META_PATH.read_text(encoding="utf-8"))
+    return {}
+
+
+TAG_ZH = _load_tag_zh()
+
+
+def upsert_tag_zh(tag: str, zh: str) -> None:
+    """新增/更新一个标签的中文备注，写回 tags_meta.json（原子写）。
+    供 server/main.py 在录入新标签时调用；Claude ingest 也可直接调用。"""
+    if not tag or not zh.strip():
+        return
+    TAG_ZH[tag] = zh.strip()
+    tmp = _META_PATH.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(TAG_ZH, ensure_ascii=False, indent=2), encoding="utf-8")
+    tmp.replace(_META_PATH)
 
 # 分类 → 中文展示名
 CATEGORY_ZH = {

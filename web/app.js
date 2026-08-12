@@ -29,7 +29,7 @@ const store = reactive({
   list: { items: [], total: 0, page: 1, size: 50 },
   current: null,        // 当前详情
   view: 'reader',       // reader | editor
-  editing: { name: '', title: '', category: 'misc', tags: [], body: '', raw_files: [], url: '' },
+  editing: { name: '', title: '', category: 'misc', tags: [], tagZh: {}, body: '', raw_files: [], url: '' },
   catCount: {},         // 分类 -> 篇数
   navOpen: false,       // 移动端抽屉
   toasts: [],
@@ -78,7 +78,10 @@ async function saveNote() {
   try {
     const r = await api('/api/notes', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(e),
+      body: JSON.stringify({
+        title: e.title, category: e.category, tags: e.tags, tag_zh: e.tagZh,
+        body: e.body, name: e.name, raw_files: e.raw_files, url: e.url,
+      }),
     });
     toast('已保存：' + r.name);
     await loadList(store.list.page);
@@ -109,7 +112,7 @@ function startEdit(note) {
   const n = note || {};
   store.editing = {
     name: n.name || '', title: n.title || '', category: n.category || 'misc',
-    tags: [...(n.tags || [])], body: n.body || '', raw_files: [...(n.raw_files || [])],
+    tags: [...(n.tags || [])], tagZh: {}, body: n.body || '', raw_files: [...(n.raw_files || [])],
     url: n.url || '',
   };
   store.view = 'editor';
@@ -317,7 +320,17 @@ const EditorPane = {
     addTag() {
       const t = this.newTag.trim();
       if (!t) return;
-      if (!store.editing.tags.includes(t)) store.editing.tags.push(t);
+      if (!store.editing.tags.includes(t)) {
+        store.editing.tags.push(t);
+        // 新标签无中文备注时，提示录入备注（纯本地，值由人给）
+        if (!store.tagZh[t]) {
+          const zh = prompt(`给标签「${t}」加个中文名（可选）：`);
+          if (zh && zh.trim()) {
+            store.editing.tagZh[t] = zh.trim();
+            store.tagZh[t] = zh.trim();
+          }
+        }
+      }
       this.newTag = '';
     },
     async suggestTags() {

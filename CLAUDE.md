@@ -220,6 +220,18 @@ python3 scripts/build_index.py
 
 新主题凑满 3 篇笔记后可向用户提议新增标签。
 
+### 新标签的中文备注（必做）
+
+标签前端展示「英文(中文)」，中文备注持久化在 `scripts/tags_meta.json`（数据本体，非索引）。**Claude ingest 写笔记打新标签时，若该标签不在 `tags_meta.json`，必须同步补上中文备注**——否则前端只显示英文。
+
+方式：写完笔记 frontmatter 后，跑一行：
+
+```bash
+python3 -c "import sys; sys.path.insert(0,'scripts'); from suggest_tags import upsert_tag_zh; upsert_tag_zh('new-tag','新标签中文')"
+```
+
+或直接编辑 `scripts/tags_meta.json`。前端录入新标签时会弹 prompt 让人填备注，后端 `POST /api/notes` 也会自动持久化，Claude ingest 走脚本即可，不依赖前端。
+
 ## 问答流程（用户提问时）
 
 1. 先读 `INDEX.md` 定位候选笔记
