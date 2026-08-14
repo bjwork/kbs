@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, autoscaling, monitoring, reading]
 status: raw
-related_raw:
-  - 2026-08-12-49_Custom_Metrics_让Auto_Scaling不再食之无味.html
+url: /k8s_lesson_html/49_Custom_Metrics_让Auto_Scaling不再食之无味.html
 ---
 
 HPA 默认只能按 CPU/Memory 扩缩容，这是传统 PaaS 的水平，生产里基本是鸡肋——等 CPU 飙高时请求早已堆积，扩容严重滞后。真实业务要按 QPS、队列长度、消息堆积这些业务指标前置扩缩，才是生产级 HPA。

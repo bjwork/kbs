@@ -4,7 +4,7 @@ date: 2026-08-05
 category: tech
 tags: [performance, reading]
 status: raw
-related_raw: 2026-08-05-mysql45-17-如何正确地显示随机消息.pdf
+url: /mysql45lesson_html/17_如何正确地显示随机消息.html
 ---
 
 丁奇第 17 讲。`order by rand()` 要建临时表 + filesort，给每行算一个随机数再排序——表越大越慢，没有索引可救。优化方案递进：①应用层先 count 出总数 N，随机一个偏移量再 limit offset,1（两次查询，扫 N 次索引但只有一行回表）；②主键有洞不行时用 min/max 区间随机 + where id>=R limit 1（有偏但快）；③要取 3 条就随机 3 个偏移量（总扫描 C+(Y1+1)+(Y2+1)+(Y3+1)）。

@@ -34,6 +34,9 @@ from suggest_tags import CATEGORY_ZH, TAG_ZH, upsert_tag_zh  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "raw"
 TRASH_DIR = ROOT / "trash"
+MYSQL45_HTML_DIR = ROOT / "mysql45lesson_html"
+K8S_HTML_DIR = ROOT / "k8s_lesson_html"
+PR_HTML_DIR = ROOT / "pr_lesson_html"
 
 CATEGORIES = ["ai-practice", "product-thinking", "tech", "writing", "reading", "misc"]
 # 上传转换管线的格式白名单：扩展名 -> 转换方式
@@ -369,8 +372,26 @@ def index(request: Request):
     return HTMLResponse(body, headers={"Cache-Control": "no-cache"})
 
 
-# ---------- 静态文件（PWA 前端） ----------
+# ---------- 静态文件 ----------
 
+# MySQL 45 讲原文使用仓库内 HTML，替代体积更大的 PDF。
+app.mount(
+    "/mysql45lesson_html",
+    StaticFiles(directory=MYSQL45_HTML_DIR),
+    name="mysql45lesson_html",
+)
+app.mount(
+    "/k8s_lesson_html",
+    StaticFiles(directory=K8S_HTML_DIR),
+    name="k8s_lesson_html",
+)
+app.mount(
+    "/pr_lesson_html",
+    StaticFiles(directory=PR_HTML_DIR),
+    name="pr_lesson_html",
+)
+
+# PWA 前端挂最后，避免吞掉上面的 API 和原文路由。
 app.mount("/", StaticFiles(directory=ROOT / "web", html=True), name="web")
 
 

@@ -4,8 +4,7 @@ date: 2026-08-07
 category: tech
 tags: [architecture, java]
 status: raw
-related_raw:
-  - 2026-08-07-26_19_单服务器高性能模式_Reactor与Proactor.html
+url: /pr_lesson_html/26_19_单服务器高性能模式_Reactor与Proactor.html
 ---
 
 PPC/TPC 卡在「一连接一资源」，Reactor 用**资源池 + I/O 多路复用**破题——一个进程管多个连接，**只在连接有数据时才处理**，靠 select/epoll/kqueue 让进程阻塞在一个对象上而不是轮询所有连接。

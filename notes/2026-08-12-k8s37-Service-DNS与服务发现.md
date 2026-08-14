@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, service, dns, network, reading]
 status: raw
-related_raw:
-  - 2026-08-12-37_找到容器不容易_Service_DNS与服务发现.html
+url: /k8s_lesson_html/37_找到容器不容易_Service_DNS与服务发现.html
 related:
   - 2026-08-12-k8s38-连通Service与调试三板斧.md
   - 2026-08-12-k8s39-Service与Ingress.md

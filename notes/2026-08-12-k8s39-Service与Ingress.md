@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, ingress, service, network, reading]
 status: raw
-related_raw:
-  - 2026-08-12-39_谈谈Service与Ingress.html
+url: /k8s_lesson_html/39_谈谈Service与Ingress.html
 related:
   - 2026-08-12-k8s37-Service-DNS与服务发现.md
   - 2026-08-12-k8s38-连通Service与调试三板斧.md

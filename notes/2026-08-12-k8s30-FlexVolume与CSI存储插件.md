@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, storage, csi, architecture, reading]
 status: raw
-related_raw:
-  - 2026-08-12-30_编写自己的存储插件_FlexVolume与CSI.html
+url: /k8s_lesson_html/30_编写自己的存储插件_FlexVolume与CSI.html
 related:
   - 2026-08-12-k8s31-CSI插件编写指南.md
 ---

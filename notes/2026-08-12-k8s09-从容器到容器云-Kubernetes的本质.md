@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, container, architecture, reading]
 status: raw
-related_raw:
-  - 2026-08-12-09_从容器到容器云_谈谈Kubernetes的本质.html
+url: /k8s_lesson_html/09_从容器到容器云_谈谈Kubernetes的本质.html
 ---
 
 张磊这篇把 K8s 的「出身」和「野心」讲清楚了：容器拆成「镜像（静态视图）+ 运行时（动态视图）」两半，真正值钱的不是容器本身，而是容器编排。K8s 脱胎于 Borg 论文，一开始就站在「编排大规模任务关系」的高度，而不是 Docker Swarm 那种「把容器放到合适节点」的调度层。

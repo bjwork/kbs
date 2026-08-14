@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, storage, pv, pvc, reading]
 status: raw
-related_raw:
-  - 2026-08-12-28_PV_PVC_StorageClass这些到底在说啥.html
+url: /k8s_lesson_html/28_PV_PVC_StorageClass这些到底在说啥.html
 related:
   - 2026-08-12-k8s29-本地持久化卷与PV-PVC.md
 ---

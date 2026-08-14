@@ -4,6 +4,7 @@ date: 2026-08-05
 category: tech
 tags: [architecture, reading]
 status: raw
+url: /mysql45lesson_html/02_日志系统_一条SQL更新语句是如何执行的.html
 ---
 
 丁奇第 2 讲。更新语句比查询多两个日志模块：redo log（InnoDB 特有、物理日志、循环写，保证 crash-safe）和 binlog（Server 层、逻辑日志、追加写，用于归档和主从复制）。WAL = 先写日志再写磁盘。两阶段提交（redo prepare → 写 binlog → redo commit）是为了让两份日志的提交状态逻辑一致——否则崩溃恢复后，主库和用 binlog 搭出来的备库会数据不一致。

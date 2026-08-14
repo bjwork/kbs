@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, monitoring, architecture, reading]
 status: raw
-related_raw:
-  - 2026-08-12-48_Prometheus_Metrics_Server与Kubernetes监控体系.html
+url: /k8s_lesson_html/48_Prometheus_Metrics_Server与Kubernetes监控体系.html
 ---
 
 K8s 监控体系这篇要厘清两件事：Prometheus 和 Metrics Server 不是一回事，定位完全不同。Prometheus 是云原生监控事实标准，源自 Google BorgMon，Pull 模式抓 Metrics 存 TSDB，配 Pushgateway（允许 Push）、Alertmanager（报警）、Grafana（可视化）。三种 Metrics 源：Node Exporter（宿主机，DaemonSet 部署）、组件 /metrics API（apiserver/kubelet 的 Work Queue 长度/QPS/延迟）、K8s 核心监控数据（Pod/Node/容器/Service，容器数据来自 kubelet 内置 cAdvisor）。

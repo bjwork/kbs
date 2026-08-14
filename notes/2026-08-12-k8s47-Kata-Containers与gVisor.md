@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, security, runtime, container, reading]
 status: raw
-related_raw:
-  - 2026-08-12-47_绝不仅仅是安全_Kata_Containers与gVisor.html
+url: /k8s_lesson_html/47_绝不仅仅是安全_Kata_Containers与gVisor.html
 related:
   - 2026-08-12-k8s06-白话容器基础二-隔离与限制.md
   - 2026-08-12-k8s36-Kubernetes只有soft-multi-tenancy.md

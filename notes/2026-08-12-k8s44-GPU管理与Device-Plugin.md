@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, gpu, scheduling, runtime, reading]
 status: raw
-related_raw:
-  - 2026-08-12-44_Kubernetes_GPU管理与Device_Plugin机制.html
+url: /k8s_lesson_html/44_Kubernetes_GPU管理与Device_Plugin机制.html
 ---
 
 这篇对我做 AI 训练推理集群直接相关。核心机制：GPU 不走专门资源类型，走 Extended Resource（如 nvidia.com/gpu: 1），调度器只认数字不认含义。Device Plugin 是个 gRPC 服务，两个核心 API：ListAndWatch 向 kubelet 汇报本机设备 ID 列表（kubelet 再以 Extended Resource 上报 APIServer）、Allocate 根据设备 ID 返回设备路径和驱动目录。分配流程：Pod 声明 nvidia.com/gpu:1 → 调度器找数量够的节点 → kubelet 从本地设备列表选一个 → 调 Device Plugin Allocate 拿设备路径/驱动目录 → 追加到 CRI 请求 → 容器启动后 /dev/nvidia0 和 /usr/local/nvidia/* 就位。

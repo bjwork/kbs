@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, container, architecture, job, reading]
 status: raw
-related_raw:
-  - 2026-08-12-22_撬动离线业务_Job与CronJob.html
+url: /k8s_lesson_html/22_撬动离线业务_Job与CronJob.html
 ---
 
 Deployment 管长作业（Long Running），Job 管离线批处理（Batch Job）。Pod 计算完退出算成功，restartPolicy 只能 Never 或 OnFailure。两个核心参数：parallelism（并发数）、completions（总任务数）。Job Controller 按公式「需要创建数 = completions - Running - 已成功」计算，再被 parallelism 截断。CronJob 是 Job 的控制器，schedule 字段写 Unix Cron 表达式，concurrencyPolicy 控制任务重叠策略（Allow/Forbid/Replace）。

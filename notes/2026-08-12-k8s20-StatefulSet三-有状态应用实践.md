@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, container, architecture, statefulset, reading]
 status: raw
-related_raw:
-  - 2026-08-12-20_深入理解StatefulSet三_有状态应用实践.html
+url: /k8s_lesson_html/20_深入理解StatefulSet三_有状态应用实践.html
 ---
 
 用 StatefulSet 部署 MySQL 主从集群，要翻「三座大山」：主从配置文件不同（ConfigMap+InitContainer 按 Pod 序号分发 master.cnf/slave.cnf）；备份文件传输（InitContainer 用 ncat 从上一个节点拉 XtraBackup 备份）；Slave 首次启动要执行 CHANGE MASTER TO 初始化 SQL（sidecar 容器等 MySQL ready 后注入）。三个坑里最反直觉的是「阅后即焚」——初始化文件用完必须改名删除，否则容器重启又跑一遍数据恢复。

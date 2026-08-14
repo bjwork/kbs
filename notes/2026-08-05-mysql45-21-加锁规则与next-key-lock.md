@@ -4,6 +4,7 @@ date: 2026-08-05
 category: tech
 tags: [lock, transaction, reading]
 status: raw
+url: /mysql45lesson_html/21_为什么我只改一行的语句_锁这么多.html
 related:
   - 2026-08-05-mysql45-07-行锁与死锁.md
   - 2026-08-05-mysql45-19-查一行也慢.md

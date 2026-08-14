@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, container, architecture, deployment, reading]
 status: raw
-related_raw:
-  - 2026-08-12-17_经典PaaS的记忆_作业副本与水平扩展.html
+url: /k8s_lesson_html/17_经典PaaS的记忆_作业副本与水平扩展.html
 ---
 
 Deployment 的本质是个双层控制器：它不直接管 Pod，而是管 ReplicaSet；每个 ReplicaSet 对应一个应用版本，再由 ReplicaSet 管具体的 Pod 副本数。滚动更新的实现就是把新 ReplicaSet 扩上去、旧 ReplicaSet 缩下来，交替推进；回滚就是把旧 ReplicaSet 再扩回来。revisionHistoryLimit 控制留几个历史版本，pause/resume 让多次修改合并成一次滚动。

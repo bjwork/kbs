@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, network, cni, architecture, reading]
 status: raw
-related_raw:
-  - 2026-08-12-35_解读Kubernetes三层网络方案.html
+url: /k8s_lesson_html/35_解读Kubernetes三层网络方案.html
 related:
   - 2026-08-12-k8s33-容器跨主机网络.md
   - 2026-08-12-k8s34-Kubernetes网络模型与CNI.md

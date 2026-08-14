@@ -4,7 +4,7 @@ date: 2026-08-05
 category: tech
 tags: [index, reading]
 status: raw
-related_raw: 2026-08-05-mysql45-09-普通索引和唯一索引-应该怎么选择.pdf
+url: /mysql45lesson_html/09_普通索引和唯一索引_应该怎么选择.html
 ---
 
 丁奇第 9 讲。查询上两者几乎无差（唯一索引找到即停，普通索引多找一条，性能差异可忽略）。**更新拉开差距**：change buffer 能把「不在内存的数据页的更新」先缓存起来，等数据页被读入时再 merge，省一次随机读 IO——但**唯一索引必须读数据页做唯一性校验，用不上 change buffer**。结论：业务能接受的话，写多读少的表优先普通索引。

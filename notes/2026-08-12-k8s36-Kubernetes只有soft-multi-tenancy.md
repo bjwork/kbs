@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, network, security, architecture, reading]
 status: raw
-related_raw:
-  - 2026-08-12-36_为什么说Kubernetes只有soft_multi-tenancy.html
+url: /k8s_lesson_html/36_为什么说Kubernetes只有soft_multi-tenancy.html
 related:
   - 2026-08-12-k8s47-Kata-Containers与gVisor.md
 ---

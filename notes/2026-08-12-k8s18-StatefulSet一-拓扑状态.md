@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, container, architecture, statefulset, reading]
 status: raw
-related_raw:
-  - 2026-08-12-18_深入理解StatefulSet一_拓扑状态.html
+url: /k8s_lesson_html/18_深入理解StatefulSet一_拓扑状态.html
 related:
   - 2026-08-12-k8s19-StatefulSet二-存储状态.md
 ---

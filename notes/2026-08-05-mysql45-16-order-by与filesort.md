@@ -4,6 +4,7 @@ date: 2026-08-05
 category: tech
 tags: [performance, optimizer, reading]
 status: raw
+url: /mysql45lesson_html/16_order_by是怎么工作的.html
 related:
   - 2026-08-05-mysql45-35-join优化-BKA与临时表.md
   - 2026-08-05-mysql45-37-内部临时表与group-by.md

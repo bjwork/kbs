@@ -4,8 +4,7 @@ date: 2026-08-12
 category: tech
 tags: [kubernetes, runtime, cri, architecture, reading]
 status: raw
-related_raw:
-  - 2026-08-12-45_幕后英雄_SIG-Node与CRI.html
+url: /k8s_lesson_html/45_幕后英雄_SIG-Node与CRI.html
 related:
   - 2026-08-12-k8s46-CRI与容器运行时.md
 ---
